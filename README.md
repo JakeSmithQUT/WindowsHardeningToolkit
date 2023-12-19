@@ -1,4 +1,4 @@
-# README for Windows Toolkit Project
+# Windows Hardening Toolkit Project
 
 ## Project Overview
 The Windows Toolkit Project is a C++ application designed to provide various system utilities, such as scanning open ports on a Windows system. This project is particularly focused on refining and applying C++ skills that have been dormant since university. The application is built using the Qt framework, leveraging its rich set of libraries for GUI development and system interaction.
