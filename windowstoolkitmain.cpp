@@ -130,6 +130,15 @@ void WindowsToolkitMain::on_btn_OpenPortScan_clicked()
     // Change textbox to say "Scanning Ports..."
     ui->tb_OpenPortsOutput->setPlainText("Scanning Ports...");
 
+    // Clear Fields
+    ui->lst_IPv6_Loopback->clear();
+    ui->lst_IPv4_Loopback->clear();
+    ui->lst_IPv6_All->clear();
+    ui->lst_IPv4_All->clear();
+    ui->lst_IPv4_Explicit->clear();
+    ui->lst_IPv4_Explicit->clear();
+
+
     // Test add item to list widget
     //ui->lst_IPv6_Loopback->addItem(new QListWidgetItem("Port Item Test"));
 
