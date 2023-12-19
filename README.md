@@ -6,7 +6,7 @@ The Windows Toolkit Project is a C++ application designed to provide various sys
 ### Features
 - **Open Port Finder:** Scans all ports on the Windows system to identify and list open ports. It's useful for network diagnostics and monitoring system security.
 
-![Video Demo](https://github.com/JakeSmithQUT/WindowsHardeningToolkit/assets/38513306/4fb2f3f9-831e-469d-a777-a726029a7e91)
+![2023-12-19 21-26-23](https://github.com/JakeSmithQUT/WindowsHardeningToolkit/assets/38513306/1513f372-a39b-4a52-80e0-c5d30a750ddf)
 
 
 ## Getting Started
