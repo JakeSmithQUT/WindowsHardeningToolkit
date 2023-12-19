@@ -1,4 +1,4 @@
-#include "windowstoolkitmain.h"
+﻿#include "windowstoolkitmain.h"
 #include "./ui_windowstoolkitmain.h"
 #include <QMessageBox>
 #include <QLineEdit>
@@ -8,6 +8,7 @@
 #include <Qfile>
 #include <QTextStream>
 #include <QHash>
+#include <QRegularExpression>
 #include <QProcess> // used for running powershell scripts
 
 QHash<QString, QString> hHashOfProtocols;
@@ -150,6 +151,33 @@ void WindowsToolkitMain::on_btn_OpenPortScan_clicked()
     process->start(command);
 }
 
+// Uses regex to see if a Qstring starts with an inputted Regex pattern
+// Params: param1 - Inputted string to check
+// Author: Jake Smith  - 19.12.23
+bool WindowsToolkitMain::startsWithRegexPattern(const QString& line, QString sRegexPattern) {
+    // Regular expression to match loopback addresses (127.0.0.0 to 127.255.255.255)
+    QRegularExpression regex(sRegexPattern);
+
+    bool bRegexMatch = regex.match(line).hasMatch();
+
+    // Check if the line starts with a loopback address
+    return bRegexMatch;
+}
+
+// Uses regex to remove IPv4 Loopback address
+// Params: param1 - Inputted string to remove address from
+// Author: Jake Smith  - 19.12.23
+QString WindowsToolkitMain::removeRegexPattern(const QString& originalString, QString sRegexPattern) {
+    // Define a regular expression to match loopback addresses
+    QRegularExpression regex(sRegexPattern);
+
+    // Replace all occurrences of loopback addresses with an empty string
+    QString stringWithoutLoopbacks = originalString;
+    stringWithoutLoopbacks.replace(regex, "");
+    stringWithoutLoopbacks = stringWithoutLoopbacks.trimmed();
+    return stringWithoutLoopbacks;
+}
+
 // Function called to execute on main thread. Simply updates text box info.
 void WindowsToolkitMain::update_tb_OpenPortsOutput(const QString &text, const QStringList &sReturnedPorts) {
     // Set Raw Output
@@ -167,28 +195,38 @@ void WindowsToolkitMain::update_tb_OpenPortsOutput(const QString &text, const QS
                 // Add to loopback
                 sPort = line.replace("::1","").trimmed()+"/tcp";
                 sProtocolDesc = findProtocolDescription(hHashOfProtocols,sPort);
-                ui->lst_IPv6_Loopback->insertItem(0, new QListWidgetItem(line.replace("::1","").trimmed() + " - [" + sProtocolDesc + "]"));
+                ui->lst_IPv6_Loopback->insertItem(0, new QListWidgetItem(sPort + " - [" + sProtocolDesc + "]"));
 
             // Else Check if Open (::)
             } else if (line.contains("::")){
                 // Add to open list
                 sPort = line.replace("::","").trimmed()+"/tcp";
                 sProtocolDesc = findProtocolDescription(hHashOfProtocols,sPort);
-                ui->lst_IPv6_All->insertItem(0, new QListWidgetItem(line.replace("::","").trimmed() + " - [" + sProtocolDesc + "]"));
+                ui->lst_IPv6_All->insertItem(0, new QListWidgetItem(sPort + " - [" + sProtocolDesc + "]"));
             // Else Check if Explicit
-            } else {
-                // It is explicit so add to explicit list.
-
+            } else if(startsWithRegexPattern(line,"^([0-9a-fA-F]{1,4}:){7}[0-9a-fA-F]{1,4}")) { // Else Check if Explicit
+                sPort = removeRegexPattern(line,"^([0-9a-fA-F]{1,4}:){7}[0-9a-fA-F]{1,4}")+"/tcp";
+                sProtocolDesc = findProtocolDescription(hHashOfProtocols,sPort);
+                ui->lst_IPv4_Explicit->insertItem(0, new QListWidgetItem(sPort + " - [" + sProtocolDesc + "]"));
                 // NEED TO IMPLEMENT
             }
 
         // Else if IPv4
         } else if (line.contains(".")){
-            // Check if Loopback (127.0.0.x)
+            if(line.startsWith("0.0.0.0")){ // Else Check if Open (0.0.0.0)
+                            sPort = line.replace("0.0.0.0","").trimmed()+"/tcp";
+                            sProtocolDesc = findProtocolDescription(hHashOfProtocols,sPort);
+                            ui->lst_IPv4_All->insertItem(0, new QListWidgetItem(sPort + " - [" + sProtocolDesc + "]"));
+            } else if (startsWithRegexPattern(line,"^127\\.(\\d+)\\.(\\d+)\\.(\\d+)")){ // Check if Loopback (127.0.0.x)
+                sPort = removeRegexPattern(line,"^127\\.(\\d+)\\.(\\d+)\\.(\\d+)")+"/tcp";
+                sProtocolDesc = findProtocolDescription(hHashOfProtocols,sPort);
+                ui->lst_IPv4_Loopback->insertItem(0, new QListWidgetItem(sPort + " - [" + sProtocolDesc + "]"));
+            } else if(startsWithRegexPattern(line,"(\\d+)\\.(\\d+)\\.(\\d+)\\.(\\d+)")) { // Else Check if Explicit
+                sPort = removeRegexPattern(line,"(\\d+)\\.(\\d+)\\.(\\d+)\\.(\\d+)")+"/tcp";
+                sProtocolDesc = findProtocolDescription(hHashOfProtocols,sPort);
+                ui->lst_IPv4_Explicit->insertItem(0, new QListWidgetItem(line.trimmed().replace(QRegularExpression("\\s+"),":") + " - [" + sProtocolDesc + "]"));
 
-            // Else Check if Open (xx.xx.xx.xx)
-
-            // Else Check if Explicit
+            }
 
         }
         // Else do nothing

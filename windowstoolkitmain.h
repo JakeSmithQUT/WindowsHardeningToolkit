@@ -23,6 +23,8 @@ private:
     QString onScriptFinished(QProcess *process, QString &outputVariable);
     void initializeProtocolHash(QHash<QString, QString> &protocolHash);
     QString findProtocolDescription(const QHash<QString, QString> &protocolHash, const QString &port);
+    bool startsWithRegexPattern(const QString& line, QString sRegexPattern);
+    QString removeRegexPattern(const QString& originalString, QString sRegexPattern);
 
 
 // Slot Functions

@@ -153,6 +153,9 @@
           <property name="toolTip">
            <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;This represents a service or application running on the IPv4 loopback address 127.0.0.1.&lt;/p&gt;&lt;p&gt;It is accessible only from the local machine, regardless of the port it is listening on.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
           </property>
+          <property name="autoFillBackground">
+           <bool>false</bool>
+          </property>
          </widget>
         </item>
         <item row="7" column="3">
