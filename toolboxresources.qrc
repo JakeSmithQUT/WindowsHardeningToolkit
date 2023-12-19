@@ -1,0 +1,5 @@
+<RCC>
+    <qresource prefix="/Protocols" lang="English">
+        <file>nmap-services.txt</file>
+    </qresource>
+</RCC>
