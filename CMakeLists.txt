@@ -20,6 +20,8 @@ set(PROJECT_SOURCES
         windowstoolkitmain.h
         windowstoolkitmain.ui
         toolboxresources.qrc
+        portscanner_mod.cpp
+        portscanner_mod.h
         ${TS_FILES}
 )
 
