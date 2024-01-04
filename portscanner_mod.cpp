@@ -1,4 +1,5 @@
 #include "portscanner_mod.h"
+#include "portscanner_port.h"
 #include <QMessageBox>
 #include <QLineEdit>
 #include <QPlainTextEdit>
@@ -14,14 +15,14 @@
 //Class Variables
 QHash<QString, QString> hHashOfProtocols;
 // Port, Protocol
-QHash<QString, QString> lst_IPv6_Loopback;
-QHash<QString, QString> lst_IPv4_Loopback;
-QHash<QString, QString> lst_IPv6_All;
-QHash<QString, QString> lst_IPv4_All;
+QHash<QString, const portscanner_port> lst_IPv6_Loopback;
+QHash<QString, const portscanner_port> lst_IPv4_Loopback;
+QHash<QString, const portscanner_port> lst_IPv6_All;
+QHash<QString, const portscanner_port> lst_IPv4_All;
 
 // Need to fix this
-QHash<QString, QString> lst_IPv6_Explicit;
-QHash<QString, QString> lst_IPv4_Explicit;
+QHash<QString, const portscanner_port> lst_IPv6_Explicit;
+QHash<QString, const portscanner_port> lst_IPv4_Explicit;
 
 // PortScanner mod Constructor
 PortScanner_mod::PortScanner_mod(QObject *parent)
@@ -165,18 +166,32 @@ void PortScanner_mod::OrderOpenedPorts(const QString &text, const QStringList &s
             // Check if Loopback (::1)
             if (line.contains("::1")){
                 // Add to loopback
-                sPort = line.replace("::1","").trimmed()+"/tcp";
+                sPort = line.replace("::1","").trimmed();//+"/tcp";
                 sProtocolDesc = FindProtocolDescription(hHashOfProtocols,sPort);
-                // Add to iPv6 list
-                lst_IPv6_Loopback.insert(sPort, sProtocolDesc);
+                // Create new port object
+                portscanner_port *oPort = new portscanner_port();
+                // set Properties
+                oPort->SetPort(sPort.toInt());
+                oPort->SetProtocol(sProtocolDesc);
+                //TODO: Find service keeping port open
 
+                // Add to iPv6 list
+                lst_IPv6_Loopback.insert(sPort, *oPort);
 
             // Else Check if Open (::)
             } else if (line.contains("::")){
                 // Add to open list
                 sPort = line.replace("::","").trimmed()+"/tcp";
                 sProtocolDesc = FindProtocolDescription(hHashOfProtocols,sPort);
-                lst_IPv6_All.insert(sPort, sProtocolDesc);
+                // Create new port object
+                portscanner_port *oPort = new portscanner_port();
+
+                oPort->SetPort(sPort.toInt());
+                oPort->SetProtocol(sProtocolDesc);
+                //TODO: Find service keeping port open
+
+                // Add to iPv6 list
+                lst_IPv6_All.insert(sPort, *oPort);
             // Else Check if Explicit
             } else if(StartsWithRegexPattern(line,"^([0-9a-fA-F]{1,4}:){7}[0-9a-fA-F]{1,4}")) { // Else Check if Explicit
                 sPort = RemoveRegexPattern(line,"^([0-9a-fA-F]{1,4}:){7}[0-9a-fA-F]{1,4}")+"/tcp";
@@ -191,12 +206,30 @@ void PortScanner_mod::OrderOpenedPorts(const QString &text, const QStringList &s
                 sPort = line.replace("0.0.0.0","").trimmed()+"/tcp";
                 sProtocolDesc = FindProtocolDescription(hHashOfProtocols,sPort);
                 //ui->lst_IPv4_All->insertItem(0, new QListWidgetItem(sPort + " - [" + sProtocolDesc + "]"));
-                lst_IPv4_All.insert(sPort, sProtocolDesc);
+                // Declare new portscanner object
+                portscanner_port *oPort = new portscanner_port;
+                // Define port and convert to integer
+                oPort->SetPort(sPort.toInt());
+                oPort->SetProtocol(sProtocolDesc);
+                //TODO: Find service keeping port open
+
+                // Add to iPv4 List
+                lst_IPv4_All.insert(sPort, *oPort);
+
             } else if (StartsWithRegexPattern(line,"^127\\.(\\d+)\\.(\\d+)\\.(\\d+)")){ // Check if Loopback (127.0.0.x)
                 sPort = RemoveRegexPattern(line,"^127\\.(\\d+)\\.(\\d+)\\.(\\d+)")+"/tcp";
                 sProtocolDesc = FindProtocolDescription(hHashOfProtocols,sPort);
                 //ui->lst_IPv4_Loopback->insertItem(0, new QListWidgetItem(sPort + " - [" + sProtocolDesc + "]"));
-                lst_IPv4_Loopback.insert(sPort, sProtocolDesc);
+                // Declare new portscanner object
+                portscanner_port *oPort = new portscanner_port;
+                // Define port and convert to integer
+                oPort->SetPort(sPort.toInt());
+                oPort->SetProtocol(sProtocolDesc);
+                //TODO: Find service keeping port open
+
+                // Add to iPv4 list
+                lst_IPv4_Loopback.insert(sPort, *oPort);
+
             } else if(StartsWithRegexPattern(line,"(\\d+)\\.(\\d+)\\.(\\d+)\\.(\\d+)")) { // Else Check if Explicit
                 sPort = RemoveRegexPattern(line,"(\\d+)\\.(\\d+)\\.(\\d+)\\.(\\d+)")+"/tcp";
                 sProtocolDesc = FindProtocolDescription(hHashOfProtocols,sPort);
@@ -242,19 +275,19 @@ QString PortScanner_mod::onScriptFinished(QProcess *process, QString &outputVari
 
 // Helper Functions
 
-QHash<QString, QString> PortScanner_mod::getIPv6Loopback() const {
+QHash<QString, portscanner_port> PortScanner_mod::getIPv6Loopback() const {
     return lst_IPv6_Loopback;
 }
 
-QHash<QString, QString> PortScanner_mod::getIPv4Loopback() const {
+QHash<QString, portscanner_port> PortScanner_mod::getIPv4Loopback() const {
     return lst_IPv4_Loopback;
 }
 
-QHash<QString, QString> PortScanner_mod::getIPv6All() const {
+QHash<QString, portscanner_port> PortScanner_mod::getIPv6All() const {
     return lst_IPv6_All;
 }
 
-QHash<QString, QString> PortScanner_mod::getIPv4All() const {
+QHash<QString, portscanner_port> PortScanner_mod::getIPv4All() const {
     return lst_IPv4_All;
 }
 

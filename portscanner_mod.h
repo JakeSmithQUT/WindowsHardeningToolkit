@@ -1,6 +1,8 @@
 #ifndef PORTSCANNER_MOD_H
 #define PORTSCANNER_MOD_H
+#include "portscanner_port.h"
 #include <QProcess> // used for running powershell scripts
+#include <QPlainTextEdit>
 #include <QPlainTextEdit>
 #include <QMainWindow>
 
@@ -40,14 +42,14 @@ private:
     // Class Variables
     QHash<QString, QString> hHashOfProtocols;
     // Port, Protocol
-    QHash<QString, QString> lst_IPv6_Loopback;
-    QHash<QString, QString> lst_IPv4_Loopback;
-    QHash<QString, QString> lst_IPv6_All;
-    QHash<QString, QString> lst_IPv4_All;
+    QHash<QString, portscanner_port> lst_IPv6_Loopback;
+    QHash<QString, portscanner_port> lst_IPv4_Loopback;
+    QHash<QString, portscanner_port> lst_IPv6_All;
+    QHash<QString, portscanner_port> lst_IPv4_All;
 
     // Need to fix this
-    QHash<QString, QString> lst_IPv6_Explicit;
-    QHash<QString, QString> lst_IPv4_Explicit;
+    QHash<QString, portscanner_port> lst_IPv6_Explicit;
+    QHash<QString, portscanner_port> lst_IPv4_Explicit;
 
 
 };
