@@ -15,10 +15,10 @@ public:
     QString RemoveRegexPattern(const QString& originalString, QString sRegexPattern);
     void ScanOpenTCPPorts();
     void ScanOpenUDPPorts();
-    QHash<QString, QString> getIPv6Loopback() const;
-    QHash<QString, QString> getIPv4Loopback() const;
-    QHash<QString, QString> getIPv6All() const;
-    QHash<QString, QString> getIPv4All() const;
+    QHash<QString, std::shared_ptr<portscanner_port>> getIPv6Loopback() const;
+    QHash<QString, std::shared_ptr<portscanner_port>> getIPv4Loopback() const;
+    QHash<QString, std::shared_ptr<portscanner_port>> getIPv6All() const;
+    QHash<QString, std::shared_ptr<portscanner_port>> getIPv4All() const;
 
 
 private:
@@ -27,7 +27,7 @@ private:
 
     void InitializeProtocolHash(QHash<QString, QString> &protocolHash);
     QString FindProtocolDescription(const QHash<QString, QString> &protocolHash, const QString &port);
-    void OrderOpenedPorts(const QString &text, const QStringList &sReturnedPorts);
+    void OrderOpenedPorts(const QStringList &sReturnedPorts);
     void runPowerShellScript(const QString &script);
     QString onScriptFinished(QProcess *process, QString &outputVariable);
 
@@ -42,14 +42,23 @@ private:
     // Class Variables
     QHash<QString, QString> hHashOfProtocols;
     // Port, Protocol
-    QHash<QString, portscanner_port> lst_IPv6_Loopback;
-    QHash<QString, portscanner_port> lst_IPv4_Loopback;
-    QHash<QString, portscanner_port> lst_IPv6_All;
-    QHash<QString, portscanner_port> lst_IPv4_All;
+    QHash<QString, std::shared_ptr<portscanner_port>> lst_IPv6_Loopback;
+    QHash<QString, std::shared_ptr<portscanner_port>> lst_IPv4_Loopback;
+    QHash<QString, std::shared_ptr<portscanner_port>> lst_IPv6_All;
+    QHash<QString, std::shared_ptr<portscanner_port>> lst_IPv4_All;
 
     // Need to fix this
-    QHash<QString, portscanner_port> lst_IPv6_Explicit;
-    QHash<QString, portscanner_port> lst_IPv4_Explicit;
+    QHash<QString, std::shared_ptr<portscanner_port>> lst_IPv6_Explicit;
+    QHash<QString, std::shared_ptr<portscanner_port>> lst_IPv4_Explicit;
+
+signals:
+    // Called when the port scan is completed
+    void ipv6LoopbackUpdated(const QHash<QString, std::shared_ptr<portscanner_port>> &data);
+    void ipv4LoopbackUpdated(const QHash<QString, std::shared_ptr<portscanner_port>> &data);
+    void ipv6AllUpdated(const QHash<QString, std::shared_ptr<portscanner_port>> &data);
+    void ipv4AllUpdated(const QHash<QString, std::shared_ptr<portscanner_port>> &data);
+    void ipv6ExplicitUpdated(const QHash<QString, std::shared_ptr<portscanner_port>> &data);
+    void ipv4ExplicitUpdated(const QHash<QString, std::shared_ptr<portscanner_port>> &data);
 
 
 };

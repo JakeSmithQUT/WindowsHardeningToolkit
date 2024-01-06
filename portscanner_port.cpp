@@ -2,7 +2,7 @@
 #include <QObject>
 #include <QString>
 
-portscanner_port::portscanner_port(QObject *parent) : QObject(parent), m_iPort(0){ }
+portscanner_port::portscanner_port() : QObject(), m_iPort(0){ }
 
 int portscanner_port::iPort() const {
     return m_iPort;
@@ -41,5 +41,16 @@ bool portscanner_port::bIsExplicit() const {
 void portscanner_port::SetIsExplicit(const bool &bIsExplicit) {
     if (bIsExplicit != m_bIsExplicit) {
         m_bIsExplicit = bIsExplicit;
+    }
+}
+
+
+QString portscanner_port::sTransportLayer() const {
+    return m_sTransportLayer;
+}
+
+void portscanner_port::SetTransportLayer(const QString &sTransportLayer) {
+    if (sTransportLayer != m_sTransportLayer) {
+        m_sTransportLayer = sTransportLayer;
     }
 }
