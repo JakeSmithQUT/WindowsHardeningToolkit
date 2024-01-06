@@ -79,7 +79,7 @@ void PortScanner_mod::ScanOpenTCPPorts(){
         //QMetaObject::invokeMethod(this, "update_tb_OpenPortsOutput", Qt::QueuedConnection, Q_ARG(QString, sScriptReturn), Q_ARG(QStringList, sReturnedPorts));
 
         // Order the ports into the respective hashes
-        OrderOpenedPorts(sReturnedPorts);
+        OrderOpenedPorts(sReturnedPorts, QString("tcp"));
 
         // Emit the signal with the scanned ports to trigger UI update.
         emit ipv6LoopbackUpdated(lst_IPv6_Loopback);
@@ -165,29 +165,30 @@ void PortScanner_mod::InitializeProtocolHash(QHash<QString, QString> &protocolHa
 
 //  Finds the protocol name based on inputted portnum/TransportLayer
 // Params: param1 - takes the QHash variable as an input.
-// Params: param2 - portnum/TransportLayer as a string
+// Params: param2 - portnum as a string
+// Params: param3 - TransportLayer as a string
 // Author: Jake Smith  - 18.12.23
-QString PortScanner_mod::FindProtocolDescription(const QHash<QString, QString> &protocolHash, const QString &port) {
-    return protocolHash.value(port, "Unknown Protocol");
+QString PortScanner_mod::FindProtocolDescription(const QHash<QString, QString> &protocolHash, const QString &sPort, const QString &sTransportProtocol) {
+    return protocolHash.value(QString("%1/%2").arg(sPort,sTransportProtocol), "¯\\_(ツ)_/¯");
 }
 
 
 
 // Function called to execute on main thread. Simply updates text box info.
-void PortScanner_mod::OrderOpenedPorts(const QStringList &sReturnedPorts) {
+void PortScanner_mod::OrderOpenedPorts(const QStringList &sReturnedPorts, const QString &sTransportProtocol) {
     // Declare Local Variables
+    QString sExplicitIP;
     QString sPort;
-    QString sTransportLayer;
     QString sProtocolDesc;
 
     // Loop through the list
     foreach (QString line, sReturnedPorts) {
-        // If IPv6
+        // =========== IPv6 ===========
         if (line.contains(":")){
             // Check if Loopback (::1)
             if (line.contains("::1")){
                 // Add to loopback
-                sPort = line.replace("::1","").trimmed()+"/tcp";;
+                sPort = line.replace("::1","").trimmed();
 
                 sProtocolDesc = FindProtocolDescription(hHashOfProtocols,sPort);
                 // Create new port object
@@ -197,6 +198,7 @@ void PortScanner_mod::OrderOpenedPorts(const QStringList &sReturnedPorts) {
                 // set Properties
                 oPort->SetPort(sPort.toInt());
                 oPort->SetProtocol(sProtocolDesc);
+                oPort->SetTransportLayer(sTransportProtocol);
                 //TODO: Find service keeping port open
 
                 // Add to iPv6 list
@@ -205,61 +207,85 @@ void PortScanner_mod::OrderOpenedPorts(const QStringList &sReturnedPorts) {
             // Else Check if Open (::)
             } else if (line.contains("::")){
                 // Add to open list
-                sPort = line.replace("::","").trimmed()+"/tcp";
+                sPort = line.replace("::","").trimmed();
                 sProtocolDesc = FindProtocolDescription(hHashOfProtocols,sPort);
                 // Create new port object
                 std::shared_ptr<portscanner_port> oPort = std::make_shared<portscanner_port>();
 
                 oPort->SetPort(sPort.toInt());
                 oPort->SetProtocol(sProtocolDesc);
+                oPort->SetTransportLayer(sTransportProtocol);
                 //TODO: Find service keeping port open
 
                 // Add to iPv6 list
                 lst_IPv6_All.insert(sPort, oPort);
             // Else Check if Explicit
-            } else if(StartsWithRegexPattern(line,"^([0-9a-fA-F]{1,4}:){7}[0-9a-fA-F]{1,4}")) { // Else Check if Explicit
-                sPort = RemoveRegexPattern(line,"^([0-9a-fA-F]{1,4}:){7}[0-9a-fA-F]{1,4}")+"/tcp";
+            } else if(StartsWithRegexPattern(line,"^([0-9a-fA-F]{1,4}:){7}[0-9a-fA-F]{1,4}")) {
+                // Detecting IP Address in powershell script output.
+                //sPort = RemoveRegexPattern(line,"^([0-9a-fA-F]{1,4}:){7}[0-9a-fA-F]{1,4}");
+                sExplicitIP = RemoveRegexPattern(line,"^(:){7}[0-9a-fA-F]{1,4}");
+                sPort = RemoveRegexPattern(line,"^([0-9a-fA-F]{1,4}:){7}");
                 sProtocolDesc = FindProtocolDescription(hHashOfProtocols,sPort);
-                //ui->lst_IPv4_Explicit->insertItem(0, new QListWidgetItem(sPort + " - [" + sProtocolDesc + "]"));
+
                 // NEED TO IMPLEMENT
+
+                std::shared_ptr<portscanner_port> oPort = std::make_shared<portscanner_port>();
+
+                oPort->SetPort(sPort.toInt());
+                oPort->SetProtocol(sProtocolDesc);
+                oPort->SetTransportLayer(sTransportProtocol);
+                oPort->SetIsExplicit(true);
+                oPort->SetExplicitIP(sExplicitIP);
+
+                lst_IPv6_Explicit.insert(sPort, oPort);
             }
 
-        // Else if IPv4
+        // =========== IPv4 ===========
         } else if (line.contains(".")){
             if(line.startsWith("0.0.0.0")){ // Else Check if Open (0.0.0.0)
-                sPort = line.replace("0.0.0.0","").trimmed()+"/tcp";
+                sPort = line.replace("0.0.0.0","").trimmed();
                 sProtocolDesc = FindProtocolDescription(hHashOfProtocols,sPort);
-                //ui->lst_IPv4_All->insertItem(0, new QListWidgetItem(sPort + " - [" + sProtocolDesc + "]"));
+
                 // Declare new portscanner object
                 std::shared_ptr<portscanner_port> oPort = std::make_shared<portscanner_port>();
                 // Define port and convert to integer
                 oPort->SetPort(sPort.toInt());
                 oPort->SetProtocol(sProtocolDesc);
+                oPort->SetTransportLayer(sTransportProtocol);
                 //TODO: Find service keeping port open
 
                 // Add to iPv4 List
                 lst_IPv4_All.insert(sPort, oPort);
 
             } else if (StartsWithRegexPattern(line,"^127\\.(\\d+)\\.(\\d+)\\.(\\d+)")){ // Check if Loopback (127.0.0.x)
-                sPort = RemoveRegexPattern(line,"^127\\.(\\d+)\\.(\\d+)\\.(\\d+)")+"/tcp";
+                sPort = RemoveRegexPattern(line,"^127\\.(\\d+)\\.(\\d+)\\.(\\d+)");
                 sProtocolDesc = FindProtocolDescription(hHashOfProtocols,sPort);
-                //ui->lst_IPv4_Loopback->insertItem(0, new QListWidgetItem(sPort + " - [" + sProtocolDesc + "]"));
+
                 // Declare new portscanner object
                 std::shared_ptr<portscanner_port> oPort = std::make_shared<portscanner_port>();
                 // Define port and convert to integer
                 oPort->SetPort(sPort.toInt());
                 oPort->SetProtocol(sProtocolDesc);
+                oPort->SetTransportLayer(sTransportProtocol);
                 //TODO: Find service keeping port open
 
                 // Add to iPv4 list
                 lst_IPv4_Loopback.insert(sPort, oPort);
 
             } else if(StartsWithRegexPattern(line,"(\\d+)\\.(\\d+)\\.(\\d+)\\.(\\d+)")) { // Else Check if Explicit
-                sPort = RemoveRegexPattern(line,"(\\d+)\\.(\\d+)\\.(\\d+)\\.(\\d+)")+"/tcp";
+                sPort = RemoveRegexPattern(line,"(\\d+)\\.(\\d+)\\.(\\d+)\\.(\\d+)");
+                sExplicitIP = line.remove(sPort).remove("\r").trimmed(); // Is this lazy???
                 sProtocolDesc = FindProtocolDescription(hHashOfProtocols,sPort);
-                //ui->lst_IPv4_Explicit->insertItem(0, new QListWidgetItem(line.trimmed().replace(QRegularExpression("\\s+"),":") + " - [" + sProtocolDesc + "]"));
-                //lst_IPv4_Explicit.insert(sPort, sProtocolDesc);
 
+                std::shared_ptr<portscanner_port> oPort = std::make_shared<portscanner_port>();
+
+                oPort->SetPort(sPort.toInt());
+                oPort->SetProtocol(sProtocolDesc);
+                oPort->SetTransportLayer(sTransportProtocol);
+                oPort->SetIsExplicit(true);
+                oPort->SetExplicitIP(sExplicitIP);
+
+                lst_IPv4_Explicit.insert(sPort, oPort);
             }
 
         }

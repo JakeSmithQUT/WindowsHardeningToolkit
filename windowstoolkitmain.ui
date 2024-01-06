@@ -44,6 +44,9 @@
         </item>
         <item row="7" column="4">
          <widget class="QLabel" name="label_5">
+          <property name="toolTip">
+           <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;This represents a service or application explicitly configured to listen on a specific IPv4 address.&lt;/p&gt;&lt;p&gt;It is accessible from the local network or, if configured, from the internet, regardless of the port it is listening on.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+          </property>
           <property name="text">
            <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p align=&quot;center&quot;&gt;&lt;span style=&quot; font-size:12pt; font-weight:700;&quot;&gt;Explicit IPv4 (x.x.x.x)&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
           </property>
@@ -52,19 +55,22 @@
         <item row="9" column="3">
          <widget class="QListWidget" name="lst_IPv6_Loopback">
           <property name="toolTip">
-           <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;This represents a service or application running on the IPv6 loopback address ::1.&lt;/p&gt;&lt;p&gt;It is accessible only from the local machine, regardless of the port it is listening on.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+           <string/>
           </property>
          </widget>
         </item>
         <item row="9" column="4">
          <widget class="QListWidget" name="lst_IPv4_Explicit">
           <property name="toolTip">
-           <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;This represents a service or application explicitly configured to listen on a specific IPv4 address.&lt;/p&gt;&lt;p&gt;It is accessible from the local network or, if configured, from the internet, regardless of the port it is listening on.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+           <string/>
           </property>
          </widget>
         </item>
         <item row="7" column="5">
          <widget class="QLabel" name="label_6">
+          <property name="toolTip">
+           <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;This represents a service or application explicitly configured to listen on a specific IPv6 address.&lt;/p&gt;&lt;p&gt;It is accessible from the local network or, if configured, from the internet, regardless of the port it is listening on.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+          </property>
           <property name="text">
            <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p align=&quot;center&quot;&gt;&lt;span style=&quot; font-size:12pt; font-weight:700;&quot;&gt;Explicit IPv6 (0x:0x:0x...)&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
           </property>
@@ -73,14 +79,14 @@
         <item row="9" column="7">
          <widget class="QListWidget" name="lst_IPv6_All">
           <property name="toolTip">
-           <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;This represents a service or application configured to listen on all available IPv6 interfaces.&lt;/p&gt;&lt;p&gt;It can accept connections from any source IPv6 address on your computer, regardless of the port it is listening on.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+           <string/>
           </property>
          </widget>
         </item>
         <item row="9" column="5">
          <widget class="QListWidget" name="lst_IPv6_Explicit">
           <property name="toolTip">
-           <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;This represents a service or application explicitly configured to listen on a specific IPv6 address.&lt;/p&gt;&lt;p&gt;It is accessible from the local network or, if configured, from the internet, regardless of the port it is listening on.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+           <string/>
           </property>
          </widget>
         </item>
@@ -89,6 +95,9 @@
         </item>
         <item row="7" column="2">
          <widget class="QLabel" name="label_3">
+          <property name="toolTip">
+           <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;This represents a service or application running on the IPv4 loopback address 127.0.0.1.&lt;/p&gt;&lt;p&gt;It is accessible only from the local machine, regardless of the port it is listening on.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+          </property>
           <property name="text">
            <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p align=&quot;center&quot;&gt;&lt;span style=&quot; font-size:12pt; font-weight:700;&quot;&gt;IPv4 Loopback (127.0.0.1)&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
           </property>
@@ -97,12 +106,15 @@
         <item row="9" column="6">
          <widget class="QListWidget" name="lst_IPv4_All">
           <property name="toolTip">
-           <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;This represents a service or application configured to listen on all available IPv4 interfaces.&lt;/p&gt;&lt;p&gt;It can accept connections from any source IPv4 address on your computer, regardless of the port it is listening on.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+           <string/>
           </property>
          </widget>
         </item>
         <item row="7" column="6">
          <widget class="QLabel" name="label_7">
+          <property name="toolTip">
+           <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;This represents a service or application configured to listen on all available IPv4 interfaces.&lt;/p&gt;&lt;p&gt;It can accept connections from any source IPv4 address on your computer, regardless of the port it is listening on.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+          </property>
           <property name="text">
            <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p align=&quot;center&quot;&gt;&lt;span style=&quot; font-size:12pt; font-weight:700;&quot;&gt;IPv4 All Interfaces (0.0..)&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
           </property>
@@ -136,6 +148,9 @@
         </item>
         <item row="7" column="7">
          <widget class="QLabel" name="label_8">
+          <property name="toolTip">
+           <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;This represents a service or application configured to listen on all available IPv6 interfaces.&lt;/p&gt;&lt;p&gt;It can accept connections from any source IPv6 address on your computer, regardless of the port it is listening on.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+          </property>
           <property name="text">
            <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p align=&quot;center&quot;&gt;&lt;span style=&quot; font-size:12pt; font-weight:700;&quot;&gt;IPv6 All Interfaces (::)&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
           </property>
@@ -151,7 +166,7 @@
         <item row="9" column="2">
          <widget class="QListWidget" name="lst_IPv4_Loopback">
           <property name="toolTip">
-           <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;This represents a service or application running on the IPv4 loopback address 127.0.0.1.&lt;/p&gt;&lt;p&gt;It is accessible only from the local machine, regardless of the port it is listening on.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+           <string/>
           </property>
           <property name="autoFillBackground">
            <bool>false</bool>
@@ -160,6 +175,9 @@
         </item>
         <item row="7" column="3">
          <widget class="QLabel" name="label_4">
+          <property name="toolTip">
+           <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;This represents a service or application running on the IPv6 loopback address ::1.&lt;/p&gt;&lt;p&gt;It is accessible only from the local machine, regardless of the port it is listening on.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+          </property>
           <property name="text">
            <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p align=&quot;center&quot;&gt;&lt;span style=&quot; font-size:12pt; font-weight:700;&quot;&gt;IPv6 Loopback (::1)&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
           </property>

@@ -17,6 +17,7 @@ public:
     QString sService() const;
     QString sIpAddress() const;
     bool bIsExplicit() const;
+    QString sExplicitIP() const;
     QString sTransportLayer() const;
 
     // Set
@@ -24,6 +25,7 @@ public:
     void SetProtocol(const QString &sProtocol="tcp");
     void SetService(const QString &sService="");
     void SetIsExplicit(const bool &bIsExplicit=false);
+    void SetExplicitIP(const QString &sExplicitIP="");
     void SetTransportLayer(const QString &sTransportLayer="");
 
 
@@ -38,6 +40,7 @@ private:
     QString m_sProtocol="Unknown";
     QString m_sService="";
     bool m_bIsExplicit=false;
+    QString m_sExplicitIP="";
     QString m_sTransportLayer="";
 };
 

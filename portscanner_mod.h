@@ -26,8 +26,8 @@ private:
     //QString findProtocolDescription(const QHash<QString, QString> &protocolHash, const QString &port);
 
     void InitializeProtocolHash(QHash<QString, QString> &protocolHash);
-    QString FindProtocolDescription(const QHash<QString, QString> &protocolHash, const QString &port);
-    void OrderOpenedPorts(const QStringList &sReturnedPorts);
+    QString FindProtocolDescription(const QHash<QString, QString> &protocolHash, const QString &sPort, const QString &sTransportProtocol="tcp");
+    void OrderOpenedPorts(const QStringList &sReturnedPorts, const QString &sTransportProtocol);
     void runPowerShellScript(const QString &script);
     QString onScriptFinished(QProcess *process, QString &outputVariable);
 
