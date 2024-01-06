@@ -1,17 +1,16 @@
-﻿#include "windowstoolkitmain.h"
+﻿////////////  THIS IS THE CONTROLLER  ///////////////////
+
+
+#include "windowstoolkitmain.h"
 #include "./ui_windowstoolkitmain.h"
+#include "portscanner_mod.h"
 #include <QMessageBox>
 #include <QLineEdit>
 #include <QPlainTextEdit>
 #include <QLabel>
 #include <QListWidget>
-#include <Qfile>
-#include <QTextStream>
-#include <QHash>
-#include <QRegularExpression>
-#include <QProcess> // used for running powershell scripts
 
-QHash<QString, QString> hHashOfProtocols;
+PortScanner_mod* PortScanner;
 
 
 // UI Setup
@@ -22,110 +21,29 @@ WindowsToolkitMain::WindowsToolkitMain(QWidget *parent)
 
     // TODO: Functionality to get updated protocol mapping from https://svn.nmap.org/nmap/nmap-services
     // Make a dictionary to quickly lookup protocols
-    initializeProtocolHash(hHashOfProtocols);
+
+    PortScanner = new PortScanner_mod(this);// Assuming 'this' is an instance of MainWindow and 'portScanner' is an instance of PortScanner
+
+    // Connect signals and slots
+    connect(PortScanner, &PortScanner_mod::ipv6LoopbackUpdated, this, &WindowsToolkitMain::updateIPv6Loopback);
+    connect(PortScanner, &PortScanner_mod::ipv4LoopbackUpdated, this, &WindowsToolkitMain::updateIPv4Loopback);
+    connect(PortScanner, &PortScanner_mod::ipv6AllUpdated, this, &WindowsToolkitMain::updateIPv6All);
+    connect(PortScanner, &PortScanner_mod::ipv4AllUpdated, this, &WindowsToolkitMain::updateIPv4All);
+    connect(PortScanner, &PortScanner_mod::ipv6ExplicitUpdated, this, &WindowsToolkitMain::updateIPv6Explicit);
+    connect(PortScanner, &PortScanner_mod::ipv4ExplicitUpdated, this, &WindowsToolkitMain::updateIPv4Explicit);
+
 
 }
+
 
 // Trash Collection of UI when closed.
 WindowsToolkitMain::~WindowsToolkitMain(){
     delete ui;
 }
 
-// Runs a powershell script as given by a string input.
-// Params: param1 - Powershell Script to be executed as a QString.
-// Author: Jake Smith  - 15.12.23
-void WindowsToolkitMain::runPowerShellScript(const QString &script) {
-    // Declare a new process
-    QProcess *process = new QProcess(this);
-
-    // Command to run PowerShell script from a QString
-    QString command = "powershell -Command \"" + script + "\"";
-
-    // Start the command in the declared process.
-    process->start(command);
-}
-
-// Initialises a protocol hash
-// Params: param1 - takes the QHash variable as an input. Variable is manipulated directly.
-// Author: Jake Smith  - 18.12.23
-void WindowsToolkitMain::initializeProtocolHash(QHash<QString, QString> &protocolHash) {
-
-    // Get nmap-services.txt as a Qstring
-    QString sFileContents;
-    QStringList slFileContents;
-
-    // Add protocol text to ouput for test
-    QFile file(":/Protocols/nmap-services.txt");
-    if(file.open(QIODevice::ReadOnly | QIODevice::Text)) {
-         QTextStream in(&file);
-         sFileContents = in.readAll();
-        file.close();
-    } else {
-        // Handle the error, for example, log it
-        qDebug() << "Error opening embedded file:" << file.errorString();
-    }
-
-    // Split file string into lines
-    slFileContents = sFileContents.split("\n");
-    // Iterate through all lines in the file.
-    QStringList slFileLine;
-    for (const QString& sFileLine : slFileContents){
-
-        // If the line doesnt start with a #
-        if(!sFileLine.trimmed().isEmpty() && sFileLine.at( 0 ) != '#'){
-            // Split the line based on the tab delimiter
-            slFileLine = sFileLine.split("\t");
-            // Verify that the split has more than 2 strings in array
-            if(slFileLine.length() > 2){
-                // Add the first item in the array as the value, add the second as the string
-                protocolHash.insert(slFileLine[1].trimmed(), slFileLine[0].trimmed());
-            }
-        }
-    }
-}
-
-//  Finds the protocol name based on inputted portnum/TransportLayer
-// Params: param1 - takes the QHash variable as an input.
-// Params: param2 - portnum/TransportLayer as a string
-// Author: Jake Smith  - 18.12.23
-QString WindowsToolkitMain::findProtocolDescription(const QHash<QString, QString> &protocolHash, const QString &port) {
-    return protocolHash.value(port, "Unknown Protocol");
-}
-
-// Code which runs once a script has finished executing.
-// Params: param1 - Powershell Script to be executed as a QString.
-// Author: Jake Smith  - 15.12.23
-QString WindowsToolkitMain::onScriptFinished(QProcess *process, QString &outputVariable) {
-    // Check that the process exists.
-    if (process) {
-        // Write the output of a process to a QString Variable and return
-        return(process->readAllStandardOutput());
-    }
-    // Return empty QString variable if no process.
-    return QString();
-}
-
 // Function Associated with the Port Scan button. run when clicked by the user
 void WindowsToolkitMain::on_btn_OpenPortScan_clicked()
 {
-    // DECLARATIONS
-    QProcess *process = new QProcess(this);
-    QString scriptOutput;
-
-    // Powershell script used to get all open ports.
-    QString sScript_TCP = R"(# Get all TCP connections
-            $tcpConnections = Get-NetTCPConnection
-
-            # Filter for 'Listen' state
-            $listeningPorts = $tcpConnections | Where-Object { $_.State -eq 'Listen' }
-
-            # If there are listening ports, display them
-            if ($listeningPorts) {
-                $listeningPorts | Format-Table -Property LocalAddress, LocalPort
-            } else {
-                Write-Host "No open ports in 'Listen' state found."
-            }
-            )";
 
     // Change textbox to say "Scanning Ports..."
     ui->tb_OpenPortsOutput->setPlainText("Scanning Ports...");
@@ -138,110 +56,77 @@ void WindowsToolkitMain::on_btn_OpenPortScan_clicked()
     ui->lst_IPv4_Explicit->clear();
     ui->lst_IPv4_Explicit->clear();
 
+    // Start Scanning Ports
+    PortScanner->ScanOpenTCPPorts();
 
-    // Test add item to list widget
-    //ui->lst_IPv6_Loopback->addItem(new QListWidgetItem("Port Item Test"));
+    // retrieve QHash maps and fill in UI Elements
 
-    // Connect to a new process and execute a function
-    connect(process, &QProcess::finished, [this, process, &scriptOutput]() {
-        // Process returned data.
-        QString sScriptReturn = onScriptFinished(process, scriptOutput);
 
-        // Qt string List
-        QStringList sReturnedPorts = sScriptReturn.split('\n', Qt::SkipEmptyParts);
-
-        // Send UI Update to the main thread
-        QMetaObject::invokeMethod(this, "update_tb_OpenPortsOutput", Qt::QueuedConnection, Q_ARG(QString, sScriptReturn), Q_ARG(QStringList, sReturnedPorts));
-
-    });
-    // Construct full Windows command (In this case powershell)
-    QString command = "powershell -Command \"" + sScript_TCP + "\"";
-    // Execute command.
-    process->start(command);
 }
 
-// Uses regex to see if a Qstring starts with an inputted Regex pattern
-// Params: param1 - Inputted string to check
-// Author: Jake Smith  - 19.12.23
-bool WindowsToolkitMain::startsWithRegexPattern(const QString& line, QString sRegexPattern) {
-    // Regular expression to match loopback addresses (127.0.0.0 to 127.255.255.255)
-    QRegularExpression regex(sRegexPattern);
+void WindowsToolkitMain::updateIPv6Loopback(const QHash<QString, std::shared_ptr<portscanner_port>> &data) {
+    // Update the UI with IPv6 Loopback data
+    for (auto i = data.begin(); i  != data.end(); ++i) {
+        QString sPortKey = i.key();
+        std::shared_ptr<portscanner_port> oPort = i.value();
+        QString protocol = oPort->sProtocol();
 
-    bool bRegexMatch = regex.match(line).hasMatch();
 
-    // Check if the line starts with a loopback address
-    return bRegexMatch;
-}
-
-// Uses regex to remove IPv4 Loopback address
-// Params: param1 - Inputted string to remove address from
-// Author: Jake Smith  - 19.12.23
-QString WindowsToolkitMain::removeRegexPattern(const QString& originalString, QString sRegexPattern) {
-    // Define a regular expression to match loopback addresses
-    QRegularExpression regex(sRegexPattern);
-
-    // Replace all occurrences of loopback addresses with an empty string
-    QString stringWithoutLoopbacks = originalString;
-    stringWithoutLoopbacks.replace(regex, "");
-    stringWithoutLoopbacks = stringWithoutLoopbacks.trimmed();
-    return stringWithoutLoopbacks;
-}
-
-// Function called to execute on main thread. Simply updates text box info.
-void WindowsToolkitMain::update_tb_OpenPortsOutput(const QString &text, const QStringList &sReturnedPorts) {
-    // Set Raw Output
-    ui->tb_OpenPortsOutput->setPlainText(text.trimmed());
-
-    QString sPort;
-    QString sProtocolDesc;
-
-    // Loop through the list
-    foreach (QString line, sReturnedPorts) {
-        // If IPv6
-        if (line.contains(":")){
-            // Check if Loopback (::1)
-            if (line.contains("::1")){
-                // Add to loopback
-                sPort = line.replace("::1","").trimmed()+"/tcp";
-                sProtocolDesc = findProtocolDescription(hHashOfProtocols,sPort);
-                ui->lst_IPv6_Loopback->insertItem(0, new QListWidgetItem(sPort + " - [" + sProtocolDesc + "]"));
-
-            // Else Check if Open (::)
-            } else if (line.contains("::")){
-                // Add to open list
-                sPort = line.replace("::","").trimmed()+"/tcp";
-                sProtocolDesc = findProtocolDescription(hHashOfProtocols,sPort);
-                ui->lst_IPv6_All->insertItem(0, new QListWidgetItem(sPort + " - [" + sProtocolDesc + "]"));
-            // Else Check if Explicit
-            } else if(startsWithRegexPattern(line,"^([0-9a-fA-F]{1,4}:){7}[0-9a-fA-F]{1,4}")) { // Else Check if Explicit
-                sPort = removeRegexPattern(line,"^([0-9a-fA-F]{1,4}:){7}[0-9a-fA-F]{1,4}")+"/tcp";
-                sProtocolDesc = findProtocolDescription(hHashOfProtocols,sPort);
-                ui->lst_IPv4_Explicit->insertItem(0, new QListWidgetItem(sPort + " - [" + sProtocolDesc + "]"));
-                // NEED TO IMPLEMENT
-            }
-
-        // Else if IPv4
-        } else if (line.contains(".")){
-            if(line.startsWith("0.0.0.0")){ // Else Check if Open (0.0.0.0)
-                            sPort = line.replace("0.0.0.0","").trimmed()+"/tcp";
-                            sProtocolDesc = findProtocolDescription(hHashOfProtocols,sPort);
-                            ui->lst_IPv4_All->insertItem(0, new QListWidgetItem(sPort + " - [" + sProtocolDesc + "]"));
-            } else if (startsWithRegexPattern(line,"^127\\.(\\d+)\\.(\\d+)\\.(\\d+)")){ // Check if Loopback (127.0.0.x)
-                sPort = removeRegexPattern(line,"^127\\.(\\d+)\\.(\\d+)\\.(\\d+)")+"/tcp";
-                sProtocolDesc = findProtocolDescription(hHashOfProtocols,sPort);
-                ui->lst_IPv4_Loopback->insertItem(0, new QListWidgetItem(sPort + " - [" + sProtocolDesc + "]"));
-            } else if(startsWithRegexPattern(line,"(\\d+)\\.(\\d+)\\.(\\d+)\\.(\\d+)")) { // Else Check if Explicit
-                sPort = removeRegexPattern(line,"(\\d+)\\.(\\d+)\\.(\\d+)\\.(\\d+)")+"/tcp";
-                sProtocolDesc = findProtocolDescription(hHashOfProtocols,sPort);
-                ui->lst_IPv4_Explicit->insertItem(0, new QListWidgetItem(line.trimmed().replace(QRegularExpression("\\s+"),":") + " - [" + sProtocolDesc + "]"));
-
-            }
-
-        }
-        // Else do nothing
+        ui->lst_IPv6_Loopback->addItem(QString("%1 - %2").arg(sPortKey,protocol));
     }
-
-
 }
+
+void WindowsToolkitMain::updateIPv4Loopback(const QHash<QString, std::shared_ptr<portscanner_port>> &data) {
+    // Update the UI with IPv4 Loopback data
+    for (auto i = data.begin(); i  != data.end(); ++i) {
+        QString sPortKey = i.key();
+        std::shared_ptr<portscanner_port> oPort = i.value();
+        QString protocol = oPort->sProtocol();
+
+
+        ui->lst_IPv4_Loopback->addItem(QString("%1 - %2").arg(sPortKey,protocol));
+    }
+}
+
+void WindowsToolkitMain::updateIPv6All(const QHash<QString, std::shared_ptr<portscanner_port>> &data) {
+    // Update the UI with IPv6 All data
+    for (auto i = data.begin(); i  != data.end(); ++i) {
+        QString sPortKey = i.key();
+        std::shared_ptr<portscanner_port> oPort = i.value();
+        QString protocol = oPort->sProtocol();
+
+
+        ui->lst_IPv6_All->addItem(QString("%1 - %2").arg(sPortKey,protocol));
+    }
+}
+
+void WindowsToolkitMain::updateIPv4All(const QHash<QString, std::shared_ptr<portscanner_port>> &data) {
+    // Update the UI with IPv4 All data
+    for (auto i = data.begin(); i  != data.end(); ++i) {
+        QString sPortKey = i.key();
+        std::shared_ptr<portscanner_port> oPort = i.value();
+        QString protocol = oPort->sProtocol();
+
+
+        ui->lst_IPv4_All->addItem(QString("%1 - %2").arg(sPortKey,protocol));
+    }
+}
+
+void WindowsToolkitMain::updateIPv6Explicit(const QHash<QString, std::shared_ptr<portscanner_port>> &data) {
+    // Update the UI with IPv6 Explicit data
+    for (auto i = data.begin(); i  != data.end(); ++i) {
+        QString sPortKey = i.key();
+        std::shared_ptr<portscanner_port> oPort = i.value();
+        QString protocol = oPort->sProtocol();
+
+
+        ui->lst_IPv6_Explicit->addItem(QString("%1 - %2").arg(sPortKey,protocol));
+    }
+}
+
+void WindowsToolkitMain::updateIPv4Explicit(const QHash<QString, std::shared_ptr<portscanner_port>> &data) {
+    // Update the UI with IPv4 Explicit data
+}
+
 
 
