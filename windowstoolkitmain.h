@@ -29,12 +29,12 @@ private slots:
     void on_btn_OpenPortScan_clicked();
 
     // Update list for new hashes in dict
-    void updateIPv6Loopback(const QHash<QString, std::shared_ptr<portscanner_port>> &data);
-    void updateIPv4Loopback(const QHash<QString, std::shared_ptr<portscanner_port>> &data);
-    void updateIPv6All(const QHash<QString, std::shared_ptr<portscanner_port>> &data);
-    void updateIPv4All(const QHash<QString, std::shared_ptr<portscanner_port>> &data);
-    void updateIPv6Explicit(const QHash<QString, std::shared_ptr<portscanner_port>> &data);
-    void updateIPv4Explicit(const QHash<QString, std::shared_ptr<portscanner_port>> &data);
+    void updateIPv6Loopback(const QMap<int, std::shared_ptr<portscanner_port>> &data);
+    void updateIPv4Loopback(const QMap<int, std::shared_ptr<portscanner_port>> &data);
+    void updateIPv6All(const QMap<int, std::shared_ptr<portscanner_port>> &data);
+    void updateIPv4All(const QMap<int, std::shared_ptr<portscanner_port>> &data);
+    void updateIPv6Explicit(const QMap<int, std::shared_ptr<portscanner_port>> &data);
+    void updateIPv4Explicit(const QMap<int, std::shared_ptr<portscanner_port>> &data);
 
 
 };

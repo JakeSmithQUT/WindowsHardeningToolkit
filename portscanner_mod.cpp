@@ -17,21 +17,21 @@
 QHash<QString, QString> hHashOfProtocols;
 
 
-//QHash<QString, const std::unique_ptr<portscanner_port>> lst_IPv6_Loopback;
-//QHash<QString, const portscanner_port> lst_IPv4_Loopback;
-//QHash<QString, const portscanner_port> lst_IPv6_All;
-//QHash<QString, const portscanner_port> lst_IPv4_All;
+//QMap<int, const std::unique_ptr<portscanner_port>> lst_IPv6_Loopback;
+//QMap<int, const portscanner_port> lst_IPv4_Loopback;
+//QMap<int, const portscanner_port> lst_IPv6_All;
+//QMap<int, const portscanner_port> lst_IPv4_All;
 
 
 // Port, Protocol
-QHash<QString, const std::shared_ptr<portscanner_port>> lst_IPv6_Loopback;
-QHash<QString, const std::shared_ptr<portscanner_port>> lst_IPv4_Loopback;
-QHash<QString, const std::shared_ptr<portscanner_port>> lst_IPv6_All;
-QHash<QString, const std::shared_ptr<portscanner_port>> lst_IPv4_All;
+QMap<int, const std::shared_ptr<portscanner_port>> lst_IPv6_Loopback;
+QMap<int, const std::shared_ptr<portscanner_port>> lst_IPv4_Loopback;
+QMap<int, const std::shared_ptr<portscanner_port>> lst_IPv6_All;
+QMap<int, const std::shared_ptr<portscanner_port>> lst_IPv4_All;
 
 // Need to fix this
-QHash<QString, const std::shared_ptr<portscanner_port>> lst_IPv6_Explicit;
-QHash<QString, const std::shared_ptr<portscanner_port>> lst_IPv4_Explicit;
+QMap<int, const std::shared_ptr<portscanner_port>> lst_IPv6_Explicit;
+QMap<int, const std::shared_ptr<portscanner_port>> lst_IPv4_Explicit;
 
 // PortScanner mod Constructor
 PortScanner_mod::PortScanner_mod(QObject *parent)
@@ -202,7 +202,7 @@ void PortScanner_mod::OrderOpenedPorts(const QStringList &sReturnedPorts, const 
                 //TODO: Find service keeping port open
 
                 // Add to iPv6 list
-                lst_IPv6_Loopback.insert(sPort, oPort);
+                lst_IPv6_Loopback.insert(sPort.toInt(), oPort);
 
             // Else Check if Open (::)
             } else if (line.contains("::")){
@@ -218,7 +218,7 @@ void PortScanner_mod::OrderOpenedPorts(const QStringList &sReturnedPorts, const 
                 //TODO: Find service keeping port open
 
                 // Add to iPv6 list
-                lst_IPv6_All.insert(sPort, oPort);
+                lst_IPv6_All.insert(sPort.toInt(), oPort);
             // Else Check if Explicit
             } else if(StartsWithRegexPattern(line,"^([0-9a-fA-F]{1,4}:){7}[0-9a-fA-F]{1,4}")) {
                 // Detecting IP Address in powershell script output.
@@ -237,7 +237,7 @@ void PortScanner_mod::OrderOpenedPorts(const QStringList &sReturnedPorts, const 
                 oPort->SetIsExplicit(true);
                 oPort->SetExplicitIP(sExplicitIP);
 
-                lst_IPv6_Explicit.insert(sPort, oPort);
+                lst_IPv6_Explicit.insert(sPort.toInt(), oPort);
             }
 
         // =========== IPv4 ===========
@@ -255,7 +255,7 @@ void PortScanner_mod::OrderOpenedPorts(const QStringList &sReturnedPorts, const 
                 //TODO: Find service keeping port open
 
                 // Add to iPv4 List
-                lst_IPv4_All.insert(sPort, oPort);
+                lst_IPv4_All.insert(sPort.toInt(), oPort);
 
             } else if (StartsWithRegexPattern(line,"^127\\.(\\d+)\\.(\\d+)\\.(\\d+)")){ // Check if Loopback (127.0.0.x)
                 sPort = RemoveRegexPattern(line,"^127\\.(\\d+)\\.(\\d+)\\.(\\d+)");
@@ -270,7 +270,7 @@ void PortScanner_mod::OrderOpenedPorts(const QStringList &sReturnedPorts, const 
                 //TODO: Find service keeping port open
 
                 // Add to iPv4 list
-                lst_IPv4_Loopback.insert(sPort, oPort);
+                lst_IPv4_Loopback.insert(sPort.toInt(), oPort);
 
             } else if(StartsWithRegexPattern(line,"(\\d+)\\.(\\d+)\\.(\\d+)\\.(\\d+)")) { // Else Check if Explicit
                 sPort = RemoveRegexPattern(line,"(\\d+)\\.(\\d+)\\.(\\d+)\\.(\\d+)");
@@ -285,7 +285,7 @@ void PortScanner_mod::OrderOpenedPorts(const QStringList &sReturnedPorts, const 
                 oPort->SetIsExplicit(true);
                 oPort->SetExplicitIP(sExplicitIP);
 
-                lst_IPv4_Explicit.insert(sPort, oPort);
+                lst_IPv4_Explicit.insert(sPort.toInt(), oPort);
             }
 
         }
@@ -325,19 +325,19 @@ QString PortScanner_mod::onScriptFinished(QProcess *process, QString &outputVari
 
 // Helper Functions
 
-QHash<QString, std::shared_ptr<portscanner_port>> PortScanner_mod::getIPv6Loopback() const {
+QMap<int, std::shared_ptr<portscanner_port>> PortScanner_mod::getIPv6Loopback() const {
     return lst_IPv6_Loopback;
 }
 
-QHash<QString, std::shared_ptr<portscanner_port>> PortScanner_mod::getIPv4Loopback() const {
+QMap<int, std::shared_ptr<portscanner_port>> PortScanner_mod::getIPv4Loopback() const {
     return lst_IPv4_Loopback;
 }
 
-QHash<QString, std::shared_ptr<portscanner_port>> PortScanner_mod::getIPv6All() const {
+QMap<int, std::shared_ptr<portscanner_port>> PortScanner_mod::getIPv6All() const {
     return lst_IPv6_All;
 }
 
-QHash<QString, std::shared_ptr<portscanner_port>> PortScanner_mod::getIPv4All() const {
+QMap<int, std::shared_ptr<portscanner_port>> PortScanner_mod::getIPv4All() const {
     return lst_IPv4_All;
 }
 

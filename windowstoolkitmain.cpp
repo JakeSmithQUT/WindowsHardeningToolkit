@@ -32,7 +32,6 @@ WindowsToolkitMain::WindowsToolkitMain(QWidget *parent)
     connect(PortScanner, &PortScanner_mod::ipv6ExplicitUpdated, this, &WindowsToolkitMain::updateIPv6Explicit);
     connect(PortScanner, &PortScanner_mod::ipv4ExplicitUpdated, this, &WindowsToolkitMain::updateIPv4Explicit);
 
-
 }
 
 
@@ -58,16 +57,12 @@ void WindowsToolkitMain::on_btn_OpenPortScan_clicked()
 
     // Start Scanning Ports
     PortScanner->ScanOpenTCPPorts();
-
-    // retrieve QHash maps and fill in UI Elements
-
-
 }
 
-void WindowsToolkitMain::updateIPv6Loopback(const QHash<QString, std::shared_ptr<portscanner_port>> &data) {
+void WindowsToolkitMain::updateIPv6Loopback(const QMap<int, std::shared_ptr<portscanner_port>> &data) {
     // Update the UI with IPv6 Loopback data
     for (auto i = data.begin(); i  != data.end(); ++i) {
-        QString sPortKey = i.key();
+        QString sPortKey = QString::number(i.key());
         std::shared_ptr<portscanner_port> oPort = i.value();
         QString sProtocol = oPort->sProtocol();
         QString sTransportLayer = oPort->sTransportLayer();
@@ -77,10 +72,10 @@ void WindowsToolkitMain::updateIPv6Loopback(const QHash<QString, std::shared_ptr
     }
 }
 
-void WindowsToolkitMain::updateIPv4Loopback(const QHash<QString, std::shared_ptr<portscanner_port>> &data) {
+void WindowsToolkitMain::updateIPv4Loopback(const QMap<int, std::shared_ptr<portscanner_port>> &data) {
     // Update the UI with IPv4 Loopback data
     for (auto i = data.begin(); i  != data.end(); ++i) {
-        QString sPortKey = i.key();
+        QString sPortKey = QString::number(i.key());
         std::shared_ptr<portscanner_port> oPort = i.value();
         QString sProtocol = oPort->sProtocol();
         QString sTransportLayer = oPort->sTransportLayer();
@@ -90,10 +85,10 @@ void WindowsToolkitMain::updateIPv4Loopback(const QHash<QString, std::shared_ptr
     }
 }
 
-void WindowsToolkitMain::updateIPv6All(const QHash<QString, std::shared_ptr<portscanner_port>> &data) {
+void WindowsToolkitMain::updateIPv6All(const QMap<int, std::shared_ptr<portscanner_port>> &data) {
     // Update the UI with IPv6 All data
     for (auto i = data.begin(); i  != data.end(); ++i) {
-        QString sPortKey = i.key();
+        QString sPortKey = QString::number(i.key());
         std::shared_ptr<portscanner_port> oPort = i.value();
         QString sProtocol = oPort->sProtocol();
         QString sTransportLayer = oPort->sTransportLayer();
@@ -103,10 +98,10 @@ void WindowsToolkitMain::updateIPv6All(const QHash<QString, std::shared_ptr<port
     }
 }
 
-void WindowsToolkitMain::updateIPv4All(const QHash<QString, std::shared_ptr<portscanner_port>> &data) {
+void WindowsToolkitMain::updateIPv4All(const QMap<int, std::shared_ptr<portscanner_port>> &data) {
     // Update the UI with IPv4 All data
     for (auto i = data.begin(); i  != data.end(); ++i) {
-        QString sPortKey = i.key();
+        QString sPortKey = QString::number(i.key());
         std::shared_ptr<portscanner_port> oPort = i.value();
         QString sProtocol = oPort->sProtocol();
         QString sTransportLayer = oPort->sTransportLayer();
@@ -116,10 +111,10 @@ void WindowsToolkitMain::updateIPv4All(const QHash<QString, std::shared_ptr<port
     }
 }
 
-void WindowsToolkitMain::updateIPv6Explicit(const QHash<QString, std::shared_ptr<portscanner_port>> &data) {
+void WindowsToolkitMain::updateIPv6Explicit(const QMap<int, std::shared_ptr<portscanner_port>> &data) {
     // Update the UI with IPv6 Explicit data
     for (auto i = data.begin(); i  != data.end(); ++i) {
-        QString sPortKey = i.key();
+        QString sPortKey = QString::number(i.key());
         std::shared_ptr<portscanner_port> oPort = i.value();
         QString sProtocol = oPort->sProtocol();
         QString sTransportLayer = oPort->sTransportLayer();
@@ -131,10 +126,10 @@ void WindowsToolkitMain::updateIPv6Explicit(const QHash<QString, std::shared_ptr
     }
 }
 
-void WindowsToolkitMain::updateIPv4Explicit(const QHash<QString, std::shared_ptr<portscanner_port>> &data) {
+void WindowsToolkitMain::updateIPv4Explicit(const QMap<int, std::shared_ptr<portscanner_port>> &data) {
     // Update the UI with IPv4 Explicit data
     for (auto i = data.begin(); i  != data.end(); ++i) {
-        QString sPortKey = i.key();
+        QString sPortKey = QString::number(i.key());
         std::shared_ptr<portscanner_port> oPort = i.value();
         QString sProtocol = oPort->sProtocol();
         QString sTransportLayer = oPort->sTransportLayer();
