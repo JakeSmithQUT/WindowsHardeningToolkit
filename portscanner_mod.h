@@ -18,6 +18,7 @@ public:
     QMap<int, std::shared_ptr<portscanner_port>> getIPv4Loopback() const;
     QMap<int, std::shared_ptr<portscanner_port>> getIPv6All() const;
     QMap<int, std::shared_ptr<portscanner_port>> getIPv4All() const;
+    void ClearScannedPorts();
 
 
 private:

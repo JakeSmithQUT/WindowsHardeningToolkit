@@ -16,20 +16,11 @@
 //Class Variables
 QHash<QString, QString> hHashOfProtocols;
 
-
-//QMap<int, const std::unique_ptr<portscanner_port>> lst_IPv6_Loopback;
-//QMap<int, const portscanner_port> lst_IPv4_Loopback;
-//QMap<int, const portscanner_port> lst_IPv6_All;
-//QMap<int, const portscanner_port> lst_IPv4_All;
-
-
 // Port, Protocol
 QMap<int, const std::shared_ptr<portscanner_port>> lst_IPv6_Loopback;
 QMap<int, const std::shared_ptr<portscanner_port>> lst_IPv4_Loopback;
 QMap<int, const std::shared_ptr<portscanner_port>> lst_IPv6_All;
 QMap<int, const std::shared_ptr<portscanner_port>> lst_IPv4_All;
-
-// Need to fix this
 QMap<int, const std::shared_ptr<portscanner_port>> lst_IPv6_Explicit;
 QMap<int, const std::shared_ptr<portscanner_port>> lst_IPv4_Explicit;
 
@@ -41,6 +32,15 @@ PortScanner_mod::PortScanner_mod(QObject *parent)
     // Load protocol Descriptions from text file
     PortScanner_mod::InitializeProtocolHash(hHashOfProtocols);
 
+}
+
+void PortScanner_mod::ClearScannedPorts(){
+    lst_IPv6_Loopback.clear();
+    lst_IPv4_Loopback.clear();
+    lst_IPv6_All.clear();
+    lst_IPv4_All.clear();
+    lst_IPv6_Explicit.clear();
+    lst_IPv4_Explicit.clear();
 }
 
 // Run a powershell script to scan open TCP Ports
@@ -250,7 +250,7 @@ void PortScanner_mod::OrderOpenedPorts(const QStringList &sReturnedPorts, const 
                 }
 
             // Else Check if Open (::)
-            } else if (line.contains("::")){
+            } else if (line.split(" ")[0]=="::"){
                 // Add to open list
                 sPort = line.replace("::","").trimmed();
                 sProtocolDesc = FindProtocolDescription(hHashOfProtocols,sPort);

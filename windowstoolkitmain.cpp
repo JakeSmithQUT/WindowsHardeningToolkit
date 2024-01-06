@@ -54,6 +54,8 @@ void WindowsToolkitMain::on_btn_OpenPortScan_clicked()
     ui->lst_IPv4_All->clear();
     ui->lst_IPv4_Explicit->clear();
     ui->lst_IPv4_Explicit->clear();
+    // Reset QMaps
+    PortScanner->ClearScannedPorts();
 
     // Start Scanning Ports
     PortScanner->ScanOpenPorts(true);
@@ -142,10 +144,6 @@ void WindowsToolkitMain::updateIPv4Explicit(const QMap<int, std::shared_ptr<port
         QString sTransportLayer = oPort->sTransportLayer().replace("tcp","t").replace("udp","u");
         QString sExplicitIP = oPort->sExplicitIP();
 
-
         ui->lst_IPv4_Explicit->addItem(QString("%4 : %1 [%2] - %3").arg(sPortKey, sTransportLayer, sProtocol, sExplicitIP));
     }
 }
-
-
-

@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1284</width>
-    <height>705</height>
+    <width>1372</width>
+    <height>755</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -15,7 +15,7 @@
   </property>
   <widget class="QWidget" name="centralwidget">
    <layout class="QGridLayout" name="gridLayout">
-    <item row="0" column="0">
+    <item row="0" column="1">
      <widget class="QTabWidget" name="tabWidget">
       <property name="tabPosition">
        <enum>QTabWidget::West</enum>
@@ -28,71 +28,31 @@
         <string>Open Port Finder</string>
        </attribute>
        <layout class="QGridLayout" name="gridLayout_2">
-        <item row="1" column="2" colspan="5">
-         <widget class="QLabel" name="label">
+        <item row="4" column="3">
+         <widget class="QCheckBox" name="cb_ShowTCP">
           <property name="text">
-           <string>Scans all ports on the Windows system to identify and list open ports. Useful for network diagnostics and monitoring system security.</string>
+           <string>TCP</string>
           </property>
          </widget>
         </item>
-        <item row="11" column="2" colspan="6">
-         <widget class="QPlainTextEdit" name="tb_OpenPortsOutput"/>
-        </item>
-        <item row="9" column="4">
-         <widget class="QListWidget" name="lst_IPv4_Explicit">
+        <item row="8" column="7">
+         <widget class="QLabel" name="label_7">
           <property name="toolTip">
-           <string/>
-          </property>
-         </widget>
-        </item>
-        <item row="7" column="4">
-         <widget class="QLabel" name="label_5">
-          <property name="toolTip">
-           <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;This represents a service or application explicitly configured to listen on a specific IPv4 address.&lt;/p&gt;&lt;p&gt;It is accessible from the local network or, if configured, from the internet.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+           <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;This represents a service or application configured to listen on all available IPv4 interfaces.&lt;/p&gt;&lt;p&gt;It can accept connections from any source IPv4 address on your computer.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
           </property>
           <property name="text">
-           <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p align=&quot;center&quot;&gt;&lt;span style=&quot; font-size:12pt; font-weight:700;&quot;&gt;Explicit IPv4 (x.x.x.x)&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+           <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p align=&quot;center&quot;&gt;&lt;span style=&quot; font-size:12pt; font-weight:700;&quot;&gt;IPv4 All Interfaces (0.0..)&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
           </property>
          </widget>
         </item>
-        <item row="7" column="3">
-         <widget class="QLabel" name="label_4">
-          <property name="toolTip">
-           <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;This represents a service or application running on the IPv6 loopback address ::1.&lt;/p&gt;&lt;p&gt;It is accessible only from the local machine.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-          </property>
-          <property name="text">
-           <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p align=&quot;center&quot;&gt;&lt;span style=&quot; font-size:12pt; font-weight:700;&quot;&gt;IPv6 Loopback (::1)&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-          </property>
-         </widget>
-        </item>
-        <item row="9" column="7">
-         <widget class="QListWidget" name="lst_IPv6_All">
-          <property name="toolTip">
-           <string/>
-          </property>
-         </widget>
-        </item>
-        <item row="10" column="2">
+        <item row="11" column="2">
          <widget class="QLabel" name="label_9">
           <property name="text">
            <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-size:12pt; font-weight:700;&quot;&gt;Powershell Script&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
           </property>
          </widget>
         </item>
-        <item row="9" column="0">
-         <spacer name="horizontalSpacer_6">
-          <property name="orientation">
-           <enum>Qt::Horizontal</enum>
-          </property>
-          <property name="sizeHint" stdset="0">
-           <size>
-            <width>40</width>
-            <height>20</height>
-           </size>
-          </property>
-         </spacer>
-        </item>
-        <item row="9" column="1">
+        <item row="10" column="1">
          <spacer name="horizontalSpacer_2">
           <property name="orientation">
            <enum>Qt::Horizontal</enum>
@@ -105,7 +65,27 @@
           </property>
          </spacer>
         </item>
-        <item row="7" column="5">
+        <item row="10" column="2">
+         <widget class="QListWidget" name="lst_IPv4_Loopback">
+          <property name="toolTip">
+           <string/>
+          </property>
+          <property name="autoFillBackground">
+           <bool>false</bool>
+          </property>
+         </widget>
+        </item>
+        <item row="8" column="2">
+         <widget class="QLabel" name="label_3">
+          <property name="toolTip">
+           <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;This represents a service or application running on the IPv4 loopback address 127.0.0.1.&lt;/p&gt;&lt;p&gt;It is accessible only from the local machine.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+          </property>
+          <property name="text">
+           <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p align=&quot;center&quot;&gt;&lt;span style=&quot; font-size:12pt; font-weight:700;&quot;&gt;IPv4 Loopback (127.0.0.1)&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+          </property>
+         </widget>
+        </item>
+        <item row="8" column="6">
          <widget class="QLabel" name="label_6">
           <property name="toolTip">
            <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;This represents a service or application explicitly configured to listen on a specific IPv6 address.&lt;/p&gt;&lt;p&gt;It is accessible from the local network or, if configured, from the internet.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
@@ -115,14 +95,65 @@
           </property>
          </widget>
         </item>
-        <item row="9" column="6">
+        <item row="4" column="4">
+         <widget class="QCheckBox" name="cb_ShowUDP">
+          <property name="text">
+           <string>UDP</string>
+          </property>
+         </widget>
+        </item>
+        <item row="10" column="8">
+         <widget class="QListWidget" name="lst_IPv6_All">
+          <property name="toolTip">
+           <string/>
+          </property>
+         </widget>
+        </item>
+        <item row="8" column="8">
+         <widget class="QLabel" name="label_8">
+          <property name="toolTip">
+           <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;This represents a service or application configured to listen on all available IPv6 interfaces.&lt;/p&gt;&lt;p&gt;It can accept connections from any source IPv6 address on your computer.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+          </property>
+          <property name="text">
+           <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p align=&quot;center&quot;&gt;&lt;span style=&quot; font-size:12pt; font-weight:700;&quot;&gt;IPv6 All Interfaces (::)&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+          </property>
+         </widget>
+        </item>
+        <item row="0" column="2">
+         <widget class="QLabel" name="label_2">
+          <property name="text">
+           <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-size:16pt; font-weight:700;&quot;&gt;Open Port Finder&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+          </property>
+         </widget>
+        </item>
+        <item row="10" column="3">
+         <widget class="QListWidget" name="lst_IPv6_Loopback">
+          <property name="toolTip">
+           <string/>
+          </property>
+         </widget>
+        </item>
+        <item row="4" column="10">
+         <spacer name="horizontalSpacer">
+          <property name="orientation">
+           <enum>Qt::Horizontal</enum>
+          </property>
+          <property name="sizeHint" stdset="0">
+           <size>
+            <width>40</width>
+            <height>20</height>
+           </size>
+          </property>
+         </spacer>
+        </item>
+        <item row="10" column="7">
          <widget class="QListWidget" name="lst_IPv4_All">
           <property name="toolTip">
            <string/>
           </property>
          </widget>
         </item>
-        <item row="9" column="9">
+        <item row="10" column="10">
          <spacer name="horizontalSpacer_7">
           <property name="orientation">
            <enum>Qt::Horizontal</enum>
@@ -135,68 +166,40 @@
           </property>
          </spacer>
         </item>
-        <item row="7" column="6">
-         <widget class="QLabel" name="label_7">
+        <item row="10" column="0">
+         <spacer name="horizontalSpacer_6">
+          <property name="orientation">
+           <enum>Qt::Horizontal</enum>
+          </property>
+          <property name="sizeHint" stdset="0">
+           <size>
+            <width>40</width>
+            <height>20</height>
+           </size>
+          </property>
+         </spacer>
+        </item>
+        <item row="8" column="3">
+         <widget class="QLabel" name="label_4">
           <property name="toolTip">
-           <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;This represents a service or application configured to listen on all available IPv4 interfaces.&lt;/p&gt;&lt;p&gt;It can accept connections from any source IPv4 address on your computer.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+           <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;This represents a service or application running on the IPv6 loopback address ::1.&lt;/p&gt;&lt;p&gt;It is accessible only from the local machine.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
           </property>
           <property name="text">
-           <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p align=&quot;center&quot;&gt;&lt;span style=&quot; font-size:12pt; font-weight:700;&quot;&gt;IPv4 All Interfaces (0.0..)&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+           <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p align=&quot;center&quot;&gt;&lt;span style=&quot; font-size:12pt; font-weight:700;&quot;&gt;IPv6 Loopback (::1)&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
           </property>
          </widget>
         </item>
-        <item row="4" column="2">
-         <widget class="QPushButton" name="btn_OpenPortScan">
-          <property name="text">
-           <string>Scan for Open Ports</string>
-          </property>
-         </widget>
-        </item>
-        <item row="7" column="2">
-         <widget class="QLabel" name="label_3">
+        <item row="8" column="4">
+         <widget class="QLabel" name="label_5">
           <property name="toolTip">
-           <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;This represents a service or application running on the IPv4 loopback address 127.0.0.1.&lt;/p&gt;&lt;p&gt;It is accessible only from the local machine.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+           <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;This represents a service or application explicitly configured to listen on a specific IPv4 address.&lt;/p&gt;&lt;p&gt;It is accessible from the local network or, if configured, from the internet.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
           </property>
           <property name="text">
-           <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p align=&quot;center&quot;&gt;&lt;span style=&quot; font-size:12pt; font-weight:700;&quot;&gt;IPv4 Loopback (127.0.0.1)&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+           <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p align=&quot;center&quot;&gt;&lt;span style=&quot; font-size:12pt; font-weight:700;&quot;&gt;Explicit IPv4 (x.x.x.x)&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
           </property>
          </widget>
         </item>
-        <item row="9" column="2">
-         <widget class="QListWidget" name="lst_IPv4_Loopback">
-          <property name="toolTip">
-           <string/>
-          </property>
-          <property name="autoFillBackground">
-           <bool>false</bool>
-          </property>
-         </widget>
-        </item>
-        <item row="7" column="7">
-         <widget class="QLabel" name="label_8">
-          <property name="toolTip">
-           <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;This represents a service or application configured to listen on all available IPv6 interfaces.&lt;/p&gt;&lt;p&gt;It can accept connections from any source IPv6 address on your computer.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-          </property>
-          <property name="text">
-           <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p align=&quot;center&quot;&gt;&lt;span style=&quot; font-size:12pt; font-weight:700;&quot;&gt;IPv6 All Interfaces (::)&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-          </property>
-         </widget>
-        </item>
-        <item row="9" column="5">
-         <widget class="QListWidget" name="lst_IPv6_Explicit">
-          <property name="toolTip">
-           <string/>
-          </property>
-         </widget>
-        </item>
-        <item row="9" column="3">
-         <widget class="QListWidget" name="lst_IPv6_Loopback">
-          <property name="toolTip">
-           <string/>
-          </property>
-         </widget>
-        </item>
-        <item row="9" column="8">
+        <item row="10" column="9">
          <spacer name="horizontalSpacer_5">
           <property name="orientation">
            <enum>Qt::Horizontal</enum>
@@ -209,14 +212,7 @@
           </property>
          </spacer>
         </item>
-        <item row="0" column="2">
-         <widget class="QLabel" name="label_2">
-          <property name="text">
-           <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-size:16pt; font-weight:700;&quot;&gt;Open Port Finder&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-          </property>
-         </widget>
-        </item>
-        <item row="12" column="2" colspan="6">
+        <item row="13" column="2" colspan="7">
          <spacer name="verticalSpacer">
           <property name="orientation">
            <enum>Qt::Vertical</enum>
@@ -228,6 +224,37 @@
            </size>
           </property>
          </spacer>
+        </item>
+        <item row="12" column="2" colspan="7">
+         <widget class="QPlainTextEdit" name="tb_OpenPortsOutput"/>
+        </item>
+        <item row="1" column="2" colspan="6">
+         <widget class="QLabel" name="label">
+          <property name="text">
+           <string>Scans all ports on the Windows system to identify and list open ports. Useful for network diagnostics and monitoring system security.</string>
+          </property>
+         </widget>
+        </item>
+        <item row="4" column="2">
+         <widget class="QPushButton" name="btn_OpenPortScan">
+          <property name="text">
+           <string>Scan for Open Ports</string>
+          </property>
+         </widget>
+        </item>
+        <item row="10" column="6">
+         <widget class="QListWidget" name="lst_IPv6_Explicit">
+          <property name="toolTip">
+           <string/>
+          </property>
+         </widget>
+        </item>
+        <item row="10" column="4" colspan="2">
+         <widget class="QListWidget" name="lst_IPv4_Explicit">
+          <property name="toolTip">
+           <string/>
+          </property>
+         </widget>
         </item>
        </layout>
       </widget>
@@ -245,7 +272,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>1284</width>
+     <width>1372</width>
      <height>21</height>
     </rect>
    </property>
