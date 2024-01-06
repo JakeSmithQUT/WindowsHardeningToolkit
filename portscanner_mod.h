@@ -13,8 +13,7 @@ public:
     explicit PortScanner_mod(QObject *parent = nullptr);
     bool StartsWithRegexPattern(const QString& line, QString sRegexPattern);
     QString RemoveRegexPattern(const QString& originalString, QString sRegexPattern);
-    void ScanOpenTCPPorts();
-    void ScanOpenUDPPorts();
+    void ScanOpenPorts(bool bTCP=true);
     QMap<int, std::shared_ptr<portscanner_port>> getIPv6Loopback() const;
     QMap<int, std::shared_ptr<portscanner_port>> getIPv4Loopback() const;
     QMap<int, std::shared_ptr<portscanner_port>> getIPv6All() const;

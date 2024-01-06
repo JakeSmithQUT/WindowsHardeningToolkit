@@ -19,6 +19,8 @@ public:
     bool bIsExplicit() const;
     QString sExplicitIP() const;
     QString sTransportLayer() const;
+    bool bTCPOpen() const;
+    bool bUDPOpen() const;
 
     // Set
     void SetPort(const int &iPort);
@@ -27,6 +29,8 @@ public:
     void SetIsExplicit(const bool &bIsExplicit=false);
     void SetExplicitIP(const QString &sExplicitIP="");
     void SetTransportLayer(const QString &sTransportLayer="");
+    void SetTCPOpen(const bool &bTCPOpen=false);
+    void SetUDPOpen(const bool &bUDPOpen=false);
 
 
     // Get
@@ -42,6 +46,8 @@ private:
     bool m_bIsExplicit=false;
     QString m_sExplicitIP="";
     QString m_sTransportLayer="";
+    bool m_bTCPOpen=false;
+    bool m_bUDPOpen=false;
 };
 
 #endif // PORTSCANNER_PORT_H

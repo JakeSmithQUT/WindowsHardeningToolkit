@@ -63,6 +63,27 @@ void portscanner_port::SetExplicitIP(const QString &sExplicitIP){
     }
 }
 
+// ========= TCP/UDP Get / Set =========
+bool portscanner_port::bTCPOpen() const {
+    return m_bTCPOpen;
+}
+
+void portscanner_port::SetTCPOpen(const bool &bTCPOpen) {
+    if (bTCPOpen != m_bTCPOpen) {
+        m_bTCPOpen = bTCPOpen;
+    }
+}
+
+bool portscanner_port::bUDPOpen() const {
+    return m_bUDPOpen;
+}
+
+void portscanner_port::SetUDPOpen(const bool &bUDPOpen) {
+    if (bUDPOpen != m_bUDPOpen) {
+        m_bUDPOpen = bUDPOpen;
+    }
+}
+
 
 // ========= Transport Layer Protocol Get / Set =========
 QString portscanner_port::sTransportLayer() const {

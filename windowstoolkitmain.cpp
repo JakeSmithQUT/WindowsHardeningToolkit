@@ -56,87 +56,94 @@ void WindowsToolkitMain::on_btn_OpenPortScan_clicked()
     ui->lst_IPv4_Explicit->clear();
 
     // Start Scanning Ports
-    PortScanner->ScanOpenTCPPorts();
+    PortScanner->ScanOpenPorts(true);
+    PortScanner->ScanOpenPorts(false);
 }
 
 void WindowsToolkitMain::updateIPv6Loopback(const QMap<int, std::shared_ptr<portscanner_port>> &data) {
     // Update the UI with IPv6 Loopback data
+    ui->lst_IPv6_Loopback->clear();
     for (auto i = data.begin(); i  != data.end(); ++i) {
         QString sPortKey = QString::number(i.key());
         std::shared_ptr<portscanner_port> oPort = i.value();
         QString sProtocol = oPort->sProtocol();
-        QString sTransportLayer = oPort->sTransportLayer();
+        QString sTransportLayer = oPort->sTransportLayer().replace("tcp","t").replace("udp","u");
 
 
-        ui->lst_IPv6_Loopback->addItem(QString("%1/%2 - %3").arg(sPortKey, sTransportLayer, sProtocol));
+        ui->lst_IPv6_Loopback->addItem(QString("%1 [%2] - %3").arg(sPortKey, sTransportLayer, sProtocol));
     }
 }
 
 void WindowsToolkitMain::updateIPv4Loopback(const QMap<int, std::shared_ptr<portscanner_port>> &data) {
     // Update the UI with IPv4 Loopback data
+    ui->lst_IPv4_Loopback->clear();
     for (auto i = data.begin(); i  != data.end(); ++i) {
         QString sPortKey = QString::number(i.key());
         std::shared_ptr<portscanner_port> oPort = i.value();
         QString sProtocol = oPort->sProtocol();
-        QString sTransportLayer = oPort->sTransportLayer();
+        QString sTransportLayer = oPort->sTransportLayer().replace("tcp","t").replace("udp","u");
 
 
-        ui->lst_IPv4_Loopback->addItem(QString("%1/%2 - %3").arg(sPortKey, sTransportLayer, sProtocol));
+        ui->lst_IPv4_Loopback->addItem(QString("%1 [%2] - %3").arg(sPortKey, sTransportLayer, sProtocol));
     }
 }
 
 void WindowsToolkitMain::updateIPv6All(const QMap<int, std::shared_ptr<portscanner_port>> &data) {
     // Update the UI with IPv6 All data
+    ui->lst_IPv6_All->clear();
     for (auto i = data.begin(); i  != data.end(); ++i) {
         QString sPortKey = QString::number(i.key());
         std::shared_ptr<portscanner_port> oPort = i.value();
         QString sProtocol = oPort->sProtocol();
-        QString sTransportLayer = oPort->sTransportLayer();
+        QString sTransportLayer = oPort->sTransportLayer().replace("tcp","t").replace("udp","u");
 
 
-        ui->lst_IPv6_All->addItem(QString("%1/%2 - %3").arg(sPortKey, sTransportLayer, sProtocol));
+        ui->lst_IPv6_All->addItem(QString("%1 [%2] - %3").arg(sPortKey, sTransportLayer, sProtocol));
     }
 }
 
 void WindowsToolkitMain::updateIPv4All(const QMap<int, std::shared_ptr<portscanner_port>> &data) {
     // Update the UI with IPv4 All data
+    ui->lst_IPv4_All->clear();
     for (auto i = data.begin(); i  != data.end(); ++i) {
         QString sPortKey = QString::number(i.key());
         std::shared_ptr<portscanner_port> oPort = i.value();
         QString sProtocol = oPort->sProtocol();
-        QString sTransportLayer = oPort->sTransportLayer();
+        QString sTransportLayer = oPort->sTransportLayer().replace("tcp","t").replace("udp","u");
 
 
-        ui->lst_IPv4_All->addItem(QString("%1/%2 - %3").arg(sPortKey, sTransportLayer, sProtocol));
+        ui->lst_IPv4_All->addItem(QString("%1 [%2] - %3").arg(sPortKey, sTransportLayer, sProtocol));
     }
 }
 
 void WindowsToolkitMain::updateIPv6Explicit(const QMap<int, std::shared_ptr<portscanner_port>> &data) {
     // Update the UI with IPv6 Explicit data
+    ui->lst_IPv4_Explicit->clear();
     for (auto i = data.begin(); i  != data.end(); ++i) {
         QString sPortKey = QString::number(i.key());
         std::shared_ptr<portscanner_port> oPort = i.value();
         QString sProtocol = oPort->sProtocol();
-        QString sTransportLayer = oPort->sTransportLayer();
+        QString sTransportLayer = oPort->sTransportLayer().replace("tcp","t").replace("udp","u");
 
         QString sExplicitIP = oPort->sExplicitIP();
 
 
-        ui->lst_IPv6_Explicit->addItem(QString("%4 : %1/%2 - %3").arg(sPortKey, sTransportLayer, sProtocol, sExplicitIP));
+        ui->lst_IPv6_Explicit->addItem(QString("%4 : %1 [%2] - %3").arg(sPortKey, sTransportLayer, sProtocol, sExplicitIP));
     }
 }
 
 void WindowsToolkitMain::updateIPv4Explicit(const QMap<int, std::shared_ptr<portscanner_port>> &data) {
     // Update the UI with IPv4 Explicit data
+    ui->lst_IPv6_Explicit->clear();
     for (auto i = data.begin(); i  != data.end(); ++i) {
         QString sPortKey = QString::number(i.key());
         std::shared_ptr<portscanner_port> oPort = i.value();
         QString sProtocol = oPort->sProtocol();
-        QString sTransportLayer = oPort->sTransportLayer();
+        QString sTransportLayer = oPort->sTransportLayer().replace("tcp","t").replace("udp","u");
         QString sExplicitIP = oPort->sExplicitIP();
 
 
-        ui->lst_IPv4_Explicit->addItem(QString("%4 : %1/%2 - %3").arg(sPortKey, sTransportLayer, sProtocol, sExplicitIP));
+        ui->lst_IPv4_Explicit->addItem(QString("%4 : %1 [%2] - %3").arg(sPortKey, sTransportLayer, sProtocol, sExplicitIP));
     }
 }
 

@@ -44,10 +44,12 @@ PortScanner_mod::PortScanner_mod(QObject *parent)
 }
 
 // Run a powershell script to scan open TCP Ports
-void PortScanner_mod::ScanOpenTCPPorts(){
+void PortScanner_mod::ScanOpenPorts(bool bTCP){
     // DECLARATIONS
     QProcess *process = new QProcess(this);
     QString scriptOutput;
+    QString sScript="";
+    QString sTransportLayer="";
 
     // Powershell script used to get all open ports.
     QString sScript_TCP = R"(# Get all TCP connections
@@ -64,11 +66,30 @@ void PortScanner_mod::ScanOpenTCPPorts(){
             }
             )";
 
+    QString sScript_UDP = R"(# Get all UDP endpoints
+            $udpEndpoints = Get-NetUDPEndpoint
+
+            # Display the UDP endpoints
+            if ($udpEndpoints) {
+                $udpEndpoints | Format-Table -Property LocalAddress, LocalPort
+            } else {
+                Write-Host "No UDP endpoints found."
+            }
+            )";
+
+    if(!bTCP){
+        sScript=sScript_UDP;
+        sTransportLayer="udp";
+    } else{
+        sScript=sScript_TCP;
+        sTransportLayer="tcp";
+    }
+
     // Test add item to list widget
     //ui->lst_IPv6_Loopback->addItem(new QListWidgetItem("Port Item Test"));
 
     // Connect to a new process and execute a function
-    QAction::connect(process, &QProcess::finished, [this, process, &scriptOutput]() {
+    QAction::connect(process, &QProcess::finished, [this, process, sTransportLayer, &scriptOutput]() {
         // Process returned data.
         QString sScriptReturn = onScriptFinished(process, scriptOutput);
 
@@ -79,7 +100,7 @@ void PortScanner_mod::ScanOpenTCPPorts(){
         //QMetaObject::invokeMethod(this, "update_tb_OpenPortsOutput", Qt::QueuedConnection, Q_ARG(QString, sScriptReturn), Q_ARG(QStringList, sReturnedPorts));
 
         // Order the ports into the respective hashes
-        OrderOpenedPorts(sReturnedPorts, QString("tcp"));
+        OrderOpenedPorts(sReturnedPorts, sTransportLayer);
 
         // Emit the signal with the scanned ports to trigger UI update.
         emit ipv6LoopbackUpdated(lst_IPv6_Loopback);
@@ -91,7 +112,7 @@ void PortScanner_mod::ScanOpenTCPPorts(){
 
     });
     // Construct full Windows command (In this case powershell)
-    QString command = "powershell -Command \"" + sScript_TCP + "\"";
+    QString command = "powershell -Command \"" + sScript + "\"";
     // Execute command.
     process->start(command);
 }
@@ -195,14 +216,38 @@ void PortScanner_mod::OrderOpenedPorts(const QStringList &sReturnedPorts, const 
                 //portscanner_port *oPort = new portscanner_port();
 
                 std::shared_ptr<portscanner_port> oPort = std::make_shared<portscanner_port>();
-                // set Properties
-                oPort->SetPort(sPort.toInt());
-                oPort->SetProtocol(sProtocolDesc);
-                oPort->SetTransportLayer(sTransportProtocol);
-                //TODO: Find service keeping port open
 
-                // Add to iPv6 list
-                lst_IPv6_Loopback.insert(sPort.toInt(), oPort);
+                // Check if port already exists
+                if(!lst_IPv6_Loopback.contains(sPort.toInt())){
+                    // set Properties
+                    oPort->SetPort(sPort.toInt());
+                    oPort->SetProtocol(sProtocolDesc);
+                    oPort->SetTransportLayer(sTransportProtocol);
+                    if (sTransportProtocol=="tcp"){
+                        oPort->SetTCPOpen(true);
+                    } else{
+                        oPort->SetUDPOpen(true);
+                    }
+                    // Add to iPv6 list
+                    lst_IPv6_Loopback.insert(sPort.toInt(), oPort);
+
+                } else {
+                    oPort = lst_IPv6_Loopback.value(sPort.toInt());
+                    // set Properties
+                    if(sTransportProtocol!=oPort->sTransportLayer()){
+                        oPort->SetTransportLayer(QString("%1/%2").arg(oPort->sTransportLayer(), sTransportProtocol));
+                    } else {
+                        oPort->SetTransportLayer(sTransportProtocol);
+                    }
+                    // Check if TCP or UDP
+                    if (sTransportProtocol=="tcp"){
+                        oPort->SetTCPOpen(true);
+                    } else{
+                        oPort->SetUDPOpen(true);
+                    }
+                    // Add to iPv6 list
+                    lst_IPv6_Loopback.insert(sPort.toInt(), oPort);
+                }
 
             // Else Check if Open (::)
             } else if (line.contains("::")){
@@ -212,13 +257,40 @@ void PortScanner_mod::OrderOpenedPorts(const QStringList &sReturnedPorts, const 
                 // Create new port object
                 std::shared_ptr<portscanner_port> oPort = std::make_shared<portscanner_port>();
 
-                oPort->SetPort(sPort.toInt());
-                oPort->SetProtocol(sProtocolDesc);
-                oPort->SetTransportLayer(sTransportProtocol);
-                //TODO: Find service keeping port open
+                if(!lst_IPv6_All.contains(sPort.toInt())){
 
-                // Add to iPv6 list
-                lst_IPv6_All.insert(sPort.toInt(), oPort);
+                    oPort->SetPort(sPort.toInt());
+                    oPort->SetProtocol(sProtocolDesc);
+                    oPort->SetTransportLayer(sTransportProtocol);
+                    if (sTransportProtocol=="tcp"){
+                        oPort->SetTCPOpen(true);
+                    } else{
+                        oPort->SetUDPOpen(true);
+                    }
+                    //TODO: Find service keeping port open
+
+                    // Add to iPv6 list
+                    lst_IPv6_All.insert(sPort.toInt(), oPort);
+
+                } else {
+                    oPort = lst_IPv6_All.value(sPort.toInt());
+                    // set Properties
+                    if(sTransportProtocol!=oPort->sTransportLayer()){
+                        oPort->SetTransportLayer(QString("%1/%2").arg(oPort->sTransportLayer(), sTransportProtocol));
+                    } else {
+                        oPort->SetTransportLayer(sTransportProtocol);
+                    }
+                    // Check if TCP or UDP
+                    if (sTransportProtocol=="tcp"){
+                        oPort->SetTCPOpen(true);
+                    } else{
+                        oPort->SetUDPOpen(true);
+                    }
+
+                    // Add to iPv6 list
+                    lst_IPv6_All.insert(sPort.toInt(), oPort);
+                }
+
             // Else Check if Explicit
             } else if(StartsWithRegexPattern(line,"^([0-9a-fA-F]{1,4}:){7}[0-9a-fA-F]{1,4}")) {
                 // Detecting IP Address in powershell script output.
@@ -231,13 +303,40 @@ void PortScanner_mod::OrderOpenedPorts(const QStringList &sReturnedPorts, const 
 
                 std::shared_ptr<portscanner_port> oPort = std::make_shared<portscanner_port>();
 
-                oPort->SetPort(sPort.toInt());
-                oPort->SetProtocol(sProtocolDesc);
-                oPort->SetTransportLayer(sTransportProtocol);
-                oPort->SetIsExplicit(true);
-                oPort->SetExplicitIP(sExplicitIP);
+                if(!lst_IPv6_Explicit.contains(sPort.toInt())){
 
-                lst_IPv6_Explicit.insert(sPort.toInt(), oPort);
+                    oPort->SetPort(sPort.toInt());
+                    oPort->SetProtocol(sProtocolDesc);
+                    oPort->SetTransportLayer(sTransportProtocol);
+                    oPort->SetIsExplicit(true);
+                    oPort->SetExplicitIP(sExplicitIP);
+
+                    if (sTransportProtocol=="tcp"){
+                        oPort->SetTCPOpen(true);
+                    } else{
+                        oPort->SetUDPOpen(true);
+                    }
+
+                    lst_IPv6_Explicit.insert(sPort.toInt(), oPort);
+
+                } else {
+                    oPort = lst_IPv6_Explicit.value(sPort.toInt());
+                    // set Properties
+                    if(sTransportProtocol!=oPort->sTransportLayer()){
+                        oPort->SetTransportLayer(QString("%1/%2").arg(oPort->sTransportLayer(), sTransportProtocol));
+                    } else {
+                        oPort->SetTransportLayer(sTransportProtocol);
+                    }
+                    // Check if TCP or UDP
+                    if (sTransportProtocol=="tcp"){
+                        oPort->SetTCPOpen(true);
+                    } else{
+                        oPort->SetUDPOpen(true);
+                    }
+
+                    // Add to iPv6 list
+                    lst_IPv6_Explicit.insert(sPort.toInt(), oPort);
+                }
             }
 
         // =========== IPv4 ===========
@@ -248,14 +347,40 @@ void PortScanner_mod::OrderOpenedPorts(const QStringList &sReturnedPorts, const 
 
                 // Declare new portscanner object
                 std::shared_ptr<portscanner_port> oPort = std::make_shared<portscanner_port>();
-                // Define port and convert to integer
-                oPort->SetPort(sPort.toInt());
-                oPort->SetProtocol(sProtocolDesc);
-                oPort->SetTransportLayer(sTransportProtocol);
-                //TODO: Find service keeping port open
 
-                // Add to iPv4 List
-                lst_IPv4_All.insert(sPort.toInt(), oPort);
+                // Check if port already exists
+                if(!lst_IPv4_All.contains(sPort.toInt())){
+
+                    // Define port and convert to integer
+                    oPort->SetPort(sPort.toInt());
+                    oPort->SetProtocol(sProtocolDesc);
+                    oPort->SetTransportLayer(sTransportProtocol);
+                    if (sTransportProtocol=="tcp"){
+                        oPort->SetTCPOpen(true);
+                    } else{
+                        oPort->SetUDPOpen(true);
+                    }
+
+                    // Add to iPv4 List
+                    lst_IPv4_All.insert(sPort.toInt(), oPort);
+
+                } else {
+                    oPort = lst_IPv4_All.value(sPort.toInt());
+                    // set Properties
+                    if(sTransportProtocol!=oPort->sTransportLayer()){
+                        oPort->SetTransportLayer(QString("%1/%2").arg(oPort->sTransportLayer(), sTransportProtocol));
+                    } else {
+                        oPort->SetTransportLayer(sTransportProtocol);
+                    }
+                    // Check if TCP or UDP
+                    if (sTransportProtocol=="tcp"){
+                        oPort->SetTCPOpen(true);
+                    } else{
+                        oPort->SetUDPOpen(true);
+                    }
+                    // Add to iPv6 list
+                    lst_IPv4_All.insert(sPort.toInt(), oPort);
+                }
 
             } else if (StartsWithRegexPattern(line,"^127\\.(\\d+)\\.(\\d+)\\.(\\d+)")){ // Check if Loopback (127.0.0.x)
                 sPort = RemoveRegexPattern(line,"^127\\.(\\d+)\\.(\\d+)\\.(\\d+)");
@@ -263,14 +388,41 @@ void PortScanner_mod::OrderOpenedPorts(const QStringList &sReturnedPorts, const 
 
                 // Declare new portscanner object
                 std::shared_ptr<portscanner_port> oPort = std::make_shared<portscanner_port>();
-                // Define port and convert to integer
-                oPort->SetPort(sPort.toInt());
-                oPort->SetProtocol(sProtocolDesc);
-                oPort->SetTransportLayer(sTransportProtocol);
-                //TODO: Find service keeping port open
 
-                // Add to iPv4 list
-                lst_IPv4_Loopback.insert(sPort.toInt(), oPort);
+                // Check if port already exists
+                if(!lst_IPv4_Loopback.contains(sPort.toInt())){
+
+                    // Define port and convert to integer
+                    oPort->SetPort(sPort.toInt());
+                    oPort->SetProtocol(sProtocolDesc);
+                    oPort->SetTransportLayer(sTransportProtocol);
+
+                    if (sTransportProtocol=="tcp"){
+                        oPort->SetTCPOpen(true);
+                    } else{
+                        oPort->SetUDPOpen(true);
+                    }
+
+                    // Add to iPv4 List
+                    lst_IPv4_Loopback.insert(sPort.toInt(), oPort);
+
+                } else {
+                    oPort = lst_IPv4_Loopback.value(sPort.toInt());
+                    // set Properties
+                    if(sTransportProtocol!=oPort->sTransportLayer()){
+                        oPort->SetTransportLayer(QString("%1/%2").arg(oPort->sTransportLayer(), sTransportProtocol));
+                    } else {
+                        oPort->SetTransportLayer(sTransportProtocol);
+                    }
+                    // Check if TCP or UDP
+                    if (sTransportProtocol=="tcp"){
+                        oPort->SetTCPOpen(true);
+                    } else{
+                        oPort->SetUDPOpen(true);
+                    }
+                    // Add to iPv6 list
+                    lst_IPv4_Loopback.insert(sPort.toInt(), oPort);
+                }
 
             } else if(StartsWithRegexPattern(line,"(\\d+)\\.(\\d+)\\.(\\d+)\\.(\\d+)")) { // Else Check if Explicit
                 sPort = RemoveRegexPattern(line,"(\\d+)\\.(\\d+)\\.(\\d+)\\.(\\d+)");
@@ -279,13 +431,49 @@ void PortScanner_mod::OrderOpenedPorts(const QStringList &sReturnedPorts, const 
 
                 std::shared_ptr<portscanner_port> oPort = std::make_shared<portscanner_port>();
 
-                oPort->SetPort(sPort.toInt());
-                oPort->SetProtocol(sProtocolDesc);
-                oPort->SetTransportLayer(sTransportProtocol);
-                oPort->SetIsExplicit(true);
-                oPort->SetExplicitIP(sExplicitIP);
+                // Check if port already exists
+                if(!lst_IPv4_Explicit.contains(sPort.toInt())){
 
-                lst_IPv4_Explicit.insert(sPort.toInt(), oPort);
+                    // Define port and convert to integer
+                    oPort->SetPort(sPort.toInt());
+                    oPort->SetProtocol(sProtocolDesc);
+                    oPort->SetTransportLayer(sTransportProtocol);
+                    oPort->SetIsExplicit(true);
+                    oPort->SetExplicitIP(sExplicitIP);
+
+                    if (sTransportProtocol=="tcp"){
+                        oPort->SetTCPOpen(true);
+                    } else{
+                        oPort->SetUDPOpen(true);
+                    }
+
+                    // Add to iPv4 List
+                    lst_IPv4_Explicit.insert(sPort.toInt(), oPort);
+
+                } else {
+                    oPort = lst_IPv4_Explicit.value(sPort.toInt());
+                    // set Properties
+                    if(sTransportProtocol!=oPort->sTransportLayer()){
+                        oPort->SetTransportLayer(QString("%1/%2").arg(oPort->sTransportLayer(), sTransportProtocol));
+                    } else {
+                        oPort->SetTransportLayer(sTransportProtocol);
+                    }
+
+                    oPort->SetIsExplicit(true);
+                    oPort->SetExplicitIP(sExplicitIP);
+                    // Check if TCP or UDP
+                    if (sTransportProtocol=="tcp"){
+                        oPort->SetTCPOpen(true);
+                    } else{
+                        oPort->SetUDPOpen(true);
+                    }
+                    // Add to iPv6 list
+                    lst_IPv4_Explicit.insert(sPort.toInt(), oPort);
+                }
+
+
+
+
             }
 
         }
