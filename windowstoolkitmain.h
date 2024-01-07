@@ -37,6 +37,7 @@ private slots:
     void updateIPv4Explicit(const QMap<int, std::shared_ptr<portscanner_port>> &data);
 
 
+    void on_lst_IPv6_All_customContextMenuRequested(const QPoint &pos);
 };
 
 

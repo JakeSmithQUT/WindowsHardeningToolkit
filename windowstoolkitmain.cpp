@@ -4,6 +4,7 @@
 #include "windowstoolkitmain.h"
 #include "./ui_windowstoolkitmain.h"
 #include "portscanner_mod.h"
+#include <QDebug>
 #include <QMessageBox>
 #include <QLineEdit>
 #include <QPlainTextEdit>
@@ -31,6 +32,9 @@ WindowsToolkitMain::WindowsToolkitMain(QWidget *parent)
     connect(PortScanner, &PortScanner_mod::ipv4AllUpdated, this, &WindowsToolkitMain::updateIPv4All);
     connect(PortScanner, &PortScanner_mod::ipv6ExplicitUpdated, this, &WindowsToolkitMain::updateIPv6Explicit);
     connect(PortScanner, &PortScanner_mod::ipv4ExplicitUpdated, this, &WindowsToolkitMain::updateIPv4Explicit);
+
+    connect(ui->lst_IPv6_All, &QListWidget::customContextMenuRequested, this, &WindowsToolkitMain::on_lst_IPv6_All_customContextMenuRequested);
+
 
 }
 
@@ -147,3 +151,21 @@ void WindowsToolkitMain::updateIPv4Explicit(const QMap<int, std::shared_ptr<port
         ui->lst_IPv4_Explicit->addItem(QString("%4 : %1 [%2] - %3").arg(sPortKey, sTransportLayer, sProtocol, sExplicitIP));
     }
 }
+
+void WindowsToolkitMain::on_lst_IPv6_All_customContextMenuRequested(const QPoint &pos){
+    //qDebug()<<QString("x=%1, y=%2").arg(pos.x(),pos.y());
+    if(ui->lst_IPv6_All->count()!=0){
+        QMenu contextMenu;
+
+        if(ui->lst_IPv6_All->selectedItems().count()>1){
+            contextMenu.addAction("Block all selected ports.");
+        } else {
+            contextMenu.addAction(QString("Block: %1").arg(ui->lst_IPv6_All->selectedItems()[0]->text()));
+        }
+
+
+        // Add other options as needed
+        contextMenu.exec(ui->lst_IPv6_All->mapToGlobal(pos));
+    }
+}
+
